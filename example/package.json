@@ -11,6 +11,6 @@
   "license": "MIT",
   "devDependencies": {
     "textlint": "^5.0.0-beta.0",
-    "textlint-rule-no-double-joshi": "file:///Users/azu/.ghq/github.com/azu/textlint-rule-no-double-joshi"
+    "textlint-rule-no-double-joshi": "file://.."
   }
 }
