@@ -1,0 +1,37 @@
+{
+  "name": "textlint-rule-no-double-joshi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azu/textlint-rule-no-double-joshi.git"
+  },
+  "author": "azu",
+  "email": "azuciao@gmail.com",
+  "homepage": "https://github.com/azu/textlint-rule-no-double-joshi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/azu/textlint-rule-no-double-joshi/issues"
+  },
+  "version": "1.0.0",
+  "description": "valida double joshi for textlint",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "textlint"
+  ],
+  "devDependencies": {
+    "espower-babel": "^3.3.0",
+    "mocha": "^2.3.3",
+    "power-assert": "^1.1.0",
+    "textlint": "^5.0.0 || ^5.0.0-beta",
+    "textlint-tester": "^0.4.0"
+  },
+  "dependencies": {
+    "kuromoji": "0.0.4",
+    "structured-source": "^3.0.2"
+  }
+}
