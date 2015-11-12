@@ -1,6 +1,5 @@
 import assert from "power-assert";
 import rule from "../src/no-double-joshi";
-import {TextLintCore} from "textlint";
 import TextLintTester from "textlint-tester";
 var tester = new TextLintTester();
 tester.run("no-double-joshi", rule, {
