@@ -14,7 +14,7 @@
   "version": "1.0.0",
   "description": "textlint rule check doubled joshi",
   "main": "lib/no-doubled-joshi.js",
-  "file": [
+  "files": [
     "lib",
     "src"
   ],
