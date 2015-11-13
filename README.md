@@ -1,4 +1,4 @@
-# textlint-rule-no-doubled-joshi
+# textlint-rule-no-doubled-joshi [![Build Status](https://travis-ci.org/azu/textlint-rule-no-doubled-joshi.svg?branch=master)](https://travis-ci.org/azu/textlint-rule-no-doubled-joshi)
 
 文中に同じ助詞が複数出てくるのをチェックする[textlint](https://github.com/textlint/textlint "textlint")ルールです。
 
@@ -6,12 +6,12 @@
 
 > 材料不足で代替素材で製品を作った。
 
-**で** という助詞が一文で複数でてきている。
+**で** という助詞が一文で複数回でてきている。
 
 
 ## Installation
 
-- [ ] Describe the installation process
+    npm install textlint-rule-no-doubled-joshi
 
 ## Usage
 
@@ -44,7 +44,7 @@
 
 ## Tests
 
-- [ ] Write How to Tests
+    npm test
 
 ## Contributing
 

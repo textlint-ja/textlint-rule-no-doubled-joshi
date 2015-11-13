@@ -1,0 +1,3 @@
+sudo: fakse
+language: node_js
+node_js: stable
