@@ -12,8 +12,12 @@
     "url": "https://github.com/azu/textlint-rule-no-doubled-joshi/issues"
   },
   "version": "1.0.0",
-  "description": "valida double joshi for textlint",
-  "main": "lib/no-double-joshi.js",
+  "description": "textlint rule check doubled joshi",
+  "main": "lib/no-doubled-joshi.js",
+  "file": [
+    "lib",
+    "src"
+  ],
   "directories": {
     "test": "test"
   },
