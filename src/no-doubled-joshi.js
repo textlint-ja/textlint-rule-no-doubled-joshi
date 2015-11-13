@@ -21,7 +21,13 @@ function createSurfaceKeyMap(tokens) {
         return keyMap;
     }, {});
 }
-export default function (context) {
+
+const defaultOptions = {
+    min_interval: 2
+};
+export default function (context, options = {}) {
+    // 最低間隔値
+    let minInterval = options.min_interval || defaultOptions.min_interval;
     let {Syntax, report, getSource, RuleError} = context;
     return {
         [Syntax.Str](node){
@@ -30,7 +36,7 @@ export default function (context) {
                 return node.type === SentenceSyntax.Sentence;
             });
             return getTokenizer().then(tokenizer => {
-                sentences.forEach(sentence => {
+                const checkSentence = (sentence) => {
                     let tokens = tokenizer.tokenizeForSentence(sentence.raw);
                     let joshiTokens = tokens.filter(token => {
                         return token.pos === "助詞";
@@ -56,7 +62,7 @@ export default function (context) {
                             let otherPosition = joshiTokens.indexOf(current);
                             // if difference
                             let differenceIndex = otherPosition - startPosition;
-                            if (differenceIndex <= 2) {
+                            if (differenceIndex <= minInterval) {
                                 report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, {
                                     line: sentence.loc.start.line - 1,
                                     // matchLastToken.word_position start with 1
@@ -67,8 +73,9 @@ export default function (context) {
                             return current;
                         });
                     });
-                });
+                };
+                sentences.forEach(checkSentence);
             });
         }
     }
-}
+};
