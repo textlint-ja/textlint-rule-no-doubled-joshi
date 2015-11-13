@@ -1,6 +1,13 @@
-# Project Name
+# textlint-rule-no-doubled-joshi
 
-- [ ] Write a project description
+文中に同じ助詞が複数出てくるのをチェックする[textlint](https://github.com/textlint/textlint "textlint")ルールです。
+
+例)
+
+> 材料不足で代替素材で製品を作った。
+
+**で** という助詞が一文で複数でてきている。
+
 
 ## Installation
 
