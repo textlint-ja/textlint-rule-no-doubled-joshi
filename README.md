@@ -14,7 +14,9 @@
 {
     "rules": {
         "no-doubled-joshi": {
+            // 出現回数 >= かつ
             "max-count": 2,
+            // 助詞同士距離 <= ならエラー
             "interval-of-tokens" : 2
         }
     }
