@@ -1,15 +1,15 @@
 {
-  "name": "textlint-rule-no-double-joshi",
+  "name": "textlint-rule-no-doubled-joshi",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/azu/textlint-rule-no-double-joshi.git"
+    "url": "git+https://github.com/azu/textlint-rule-no-doubled-joshi.git"
   },
   "author": "azu",
   "email": "azuciao@gmail.com",
-  "homepage": "https://github.com/azu/textlint-rule-no-double-joshi",
+  "homepage": "https://github.com/azu/textlint-rule-no-doubled-joshi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/azu/textlint-rule-no-double-joshi/issues"
+    "url": "https://github.com/azu/textlint-rule-no-doubled-joshi/issues"
   },
   "version": "1.0.0",
   "description": "valida double joshi for textlint",
