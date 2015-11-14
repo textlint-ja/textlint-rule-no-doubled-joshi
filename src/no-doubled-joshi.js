@@ -22,14 +22,15 @@ function createSurfaceKeyMap(tokens) {
         return keyMap;
     }, {});
 }
-function exceptionRule(token) {
+function matchExceptionRule(tokens) {
+    let token = tokens[0];
     if (token.pos_detail_1 === "連体化") {
-        return false;
+        return true;
     }
     if (token.pos_detail_1 === "格助詞" && token.surface_form === "を") {
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 const defaultOptions = {
     min_interval: 2,
@@ -56,10 +57,6 @@ export default function (context, options = {}) {
                     let joshiTokens = tokens.filter(token => {
                         return token.pos === "助詞";
                     });
-                    // strict mode ではない時例外を除去する
-                    if (!isStrict) {
-                        joshiTokens = joshiTokens.filter(exceptionRule);
-                    }
                     let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(joshiTokens);
                     /*
                     # Data Structure
@@ -72,6 +69,12 @@ export default function (context, options = {}) {
                      */
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
                         let tokens = joshiTokenSurfaceKeyMap[key];
+                        // strict mode ではない時例外を除去する
+                        if (!isStrict) {
+                            if(matchExceptionRule(tokens)) {
+                                return;
+                            }
+                        }
                         if (tokens.length <= 1) {
                             return;// no duplicated token
                         }

@@ -6,7 +6,13 @@ tester.run("no-double-joshi", rule, {
     valid: [
         "私は彼が好きだ",
         "既存のコードの利用", // "の" の例外
-        "オブジェクトを返す関数を公開した" // "を" の例外
+        "オブジェクトを返す関数を公開した", // "を" の例外
+        {
+            text: "私は彼の鼻は好きだ",
+            options: {
+                "min_interval": 1
+            }
+        }
     ],
     invalid: [
         {
@@ -87,8 +93,8 @@ tester.run("no-double-joshi", rule, {
         },
         {
             text: "既存のコードの利用",
-            options:{
-                strict :true
+            options: {
+                strict: true
             },
             errors: [
                 {
