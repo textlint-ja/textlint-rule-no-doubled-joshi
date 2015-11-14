@@ -7,12 +7,7 @@ tester.run("no-double-joshi", rule, {
         "私は彼が好きだ",
         "既存のコードの利用", // "の" の例外
         "オブジェクトを返す関数を公開した", // "を" の例外
-        {
-            text: "私は彼の鼻は好きだ",
-            options: {
-                "min_interval": 1
-            }
-        }
+        "私は彼の鼻は好きだ"
     ],
     invalid: [
         {
@@ -48,6 +43,9 @@ tester.run("no-double-joshi", rule, {
         },
         {
             text: "洋服をドラム式洗濯機でお湯と洗剤で洗い、乾燥機で素早く乾燥させる。",
+            options: {
+                "min_interval": 2
+            },
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "で" がみつかりました。`,
@@ -83,6 +81,9 @@ tester.run("no-double-joshi", rule, {
         },
         {
             text: "白装束で重力のない足どりでやってくる",
+            options: {
+                "min_interval": 2
+            },
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "で" がみつかりました。`,

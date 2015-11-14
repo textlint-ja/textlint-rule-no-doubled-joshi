@@ -33,7 +33,7 @@ function matchExceptionRule(tokens) {
     return false;
 }
 const defaultOptions = {
-    min_interval: 2,
+    min_interval: 1,
     strict: false
 };
 export default function (context, options = {}) {
