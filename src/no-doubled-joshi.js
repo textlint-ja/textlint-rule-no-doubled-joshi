@@ -67,7 +67,7 @@ export default function (context, options = {}) {
                             let otherPosition = joshiTokens.indexOf(current);
                             // if difference
                             let differenceIndex = otherPosition - startPosition;
-                            if (differenceIndex >= minInterval) {
+                            if (differenceIndex <= minInterval) {
                                 report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, {
                                     line: sentence.loc.start.line - 1,
                                     // matchLastToken.word_position start with 1
