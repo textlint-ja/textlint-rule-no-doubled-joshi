@@ -62,3 +62,18 @@ MIT
 
 - [Doubled Joshi Validator · Issue #460 · redpen-cc/redpen](https://github.com/redpen-cc/redpen/issues/460 "Doubled Joshi Validator · Issue #460 · redpen-cc/redpen")
 - [事象の構造から見る二重デ格構文の発生 ](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no6_papers/JCLWorkshop_No6_01.pdf "JCLWorkshop_No6_01.pdf")
+
+
+## 判定処理
+
+ある助詞(かつ品詞細分類)が一致するものが、一定最低間隔値(距離)以下に書かれている場合を検出する。
+
+[元ネタ](https://github.com/redpen-cc/redpen/issues/460 "Doubled Joshi Validator · Issue #460 · redpen-cc/redpen")は助詞が1文(センテンス)に2回以上でてきた際にエラーとしてる。
+
+少し厳しすぎると感じたので、1文(センテンス)ではなく最低間隔値(距離)という概念を導入した
+
+> この書籍はJavaScriptのライブラリやツールにおけるプラグインアーキテクチャを見ていく事を目的としたものです
+
+この場合 "を" が最低間隔値2で並んでいるためエラーとするべき。
+
+- [kuromoji.js demo](http://takuyaa.github.io/kuromoji.js/demo/tokenize.html "kuromoji.js demo")
