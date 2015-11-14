@@ -1,16 +1,11 @@
 {
-  "name": "example",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "textlint": "textlint -f pretty-error --rule no-double-joshi README.md",
+    "textlint": "textlint -f pretty-error --rule no-doubled-joshi README.md",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "azu",
-  "license": "MIT",
   "devDependencies": {
     "textlint": "^5.0.0-beta.0",
-    "textlint-rule-no-double-joshi": "file://.."
+    "textlint-rule-no-double-joshi": "file:.//.."
   }
 }
