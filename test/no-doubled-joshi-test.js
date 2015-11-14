@@ -5,9 +5,8 @@ var tester = new TextLintTester();
 tester.run("no-double-joshi", rule, {
     valid: [
         "私は彼が好きだ",
-        {
-            text: "既存のコードの利用"
-        }
+        "既存のコードの利用", // "の" の例外
+        "オブジェクトを返す関数を公開した" // "を" の例外
     ],
     invalid: [
         {

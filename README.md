@@ -40,7 +40,7 @@
 
 この場合の、**は**と**は**の間隔値は1
 
-> 彼**の**母は私**の**父と知り合い
+> 既存**の**文章**の**修正
 
 この場合の、**の**と**の**の間隔値は2
 
@@ -66,6 +66,8 @@ MIT
 - [事象の構造から見る二重デ格構文の発生 ](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no6_papers/JCLWorkshop_No6_01.pdf "JCLWorkshop_No6_01.pdf")
 - [第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠](http://www.asca-co.com/takumi/2010/07/3.html "第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠")
 - [(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no3_papers/JCLWorkshop_No3_02.pdf "(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf")
+- [助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに](http://popoon.hatenablog.com/entry/2014/07/11/232057 "助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに")
+- [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
 
 ## 判定処理
 
@@ -83,8 +85,20 @@ MIT
 
 ## 例外
 
-例外は `{ strict: true }` ならばエラーとするが、デフォルトでは`{ strict: false }`としエラーとしない
+以下の項目については、曖昧性があるため助詞が連続していてもデフォルトではエラーとして扱わない。
 
-助詞:連体化である"の"の重なりは例外として許可する。
+設定が `{ strict: true }` ならばエラーとするが、デフォルトでは`{ strict: false }` となっている。
+
+#### 助詞:連体化 "の"
+
+"の" の重なりは例外として許可する。
 
 - [第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠](http://www.asca-co.com/takumi/2010/07/3.html "第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠")
+- [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
+    - "の" の消し方について
+
+#### 助詞:格助詞 "を"
+
+> オブジェクトを返す関数を公開する
+
+"を" の重なりは例外として許可する。

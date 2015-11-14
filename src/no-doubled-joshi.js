@@ -26,6 +26,9 @@ function exceptionRule(token) {
     if (token.pos_detail_1 === "連体化") {
         return false;
     }
+    if (token.pos_detail_1 === "格助詞" && token.surface_form === "を") {
+        return false;
+    }
     return true;
 }
 const defaultOptions = {
