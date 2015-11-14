@@ -1,5 +1,6 @@
 // LICENSE : MIT
 "use strict";
+import {RuleHelper} from "textlint-rule-helper";
 import {getTokenizer} from "kuromojin";
 import splitSentences, {Syntax as SentenceSyntax} from "sentence-splitter";
 /**
@@ -26,11 +27,15 @@ const defaultOptions = {
     min_interval: 2
 };
 export default function (context, options = {}) {
+    const helper = new RuleHelper(context);
     // 最低間隔値
     let minInterval = options.min_interval || defaultOptions.min_interval;
     let {Syntax, report, getSource, RuleError} = context;
     return {
         [Syntax.Str](node){
+            if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
+                return;
+            }
             let text = getSource(node);
             let sentences = splitSentences(text).filter(node => {
                 return node.type === SentenceSyntax.Sentence;
