@@ -22,14 +22,21 @@ function createSurfaceKeyMap(tokens) {
         return keyMap;
     }, {});
 }
-
+function exceptionRule(token) {
+    if (token.pos_detail_1 === "連体化") {
+        return false;
+    }
+    return true;
+}
 const defaultOptions = {
-    min_interval: 2
+    min_interval: 2,
+    strict: false
 };
 export default function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     let minInterval = options.min_interval || defaultOptions.min_interval;
+    let isStrict = options.strict || defaultOptions.strict;
     let {Syntax, report, getSource, RuleError} = context;
     return {
         [Syntax.Str](node){
@@ -46,6 +53,10 @@ export default function (context, options = {}) {
                     let joshiTokens = tokens.filter(token => {
                         return token.pos === "助詞";
                     });
+                    // strict mode ではない時例外を除去する
+                    if (!isStrict) {
+                        joshiTokens = joshiTokens.filter(exceptionRule);
+                    }
                     let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(joshiTokens);
                     /*
                     # Data Structure

@@ -24,7 +24,9 @@
     "rules": {
         "no-doubled-joshi": {
             // 助詞のtoken同士の距離が2以下ならエラー
-            "min_interval" : 2
+            "min_interval" : 2,
+            // 例外を許可するかどうか
+            "strict": true
         }
     }
 }
@@ -62,7 +64,7 @@ MIT
 
 - [Doubled Joshi Validator · Issue #460 · redpen-cc/redpen](https://github.com/redpen-cc/redpen/issues/460 "Doubled Joshi Validator · Issue #460 · redpen-cc/redpen")
 - [事象の構造から見る二重デ格構文の発生 ](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no6_papers/JCLWorkshop_No6_01.pdf "JCLWorkshop_No6_01.pdf")
-
+- [第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠](http://www.asca-co.com/takumi/2010/07/3.html "第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠")
 
 ## 判定処理
 
@@ -77,3 +79,11 @@ MIT
 この場合 "を" が最低間隔値2で並んでいるためエラーとするべき。
 
 - [kuromoji.js demo](http://takuyaa.github.io/kuromoji.js/demo/tokenize.html "kuromoji.js demo")
+
+## 例外
+
+例外は `{ strict: true }` ならばエラーとするが、デフォルトでは`{ strict: false }`としエラーとしない
+
+助詞:連体化である"の"の重なりは例外として許可する。
+
+- [第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠](http://www.asca-co.com/takumi/2010/07/3.html "第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠")

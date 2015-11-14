@@ -4,7 +4,10 @@ import TextLintTester from "textlint-tester";
 var tester = new TextLintTester();
 tester.run("no-double-joshi", rule, {
     valid: [
-        "私は彼が好きだ"
+        "私は彼が好きだ",
+        {
+            text: "既存のコードの利用"
+        }
     ],
     invalid: [
         {
@@ -80,6 +83,19 @@ tester.run("no-double-joshi", rule, {
                     message: `一文に二回以上利用されている助詞 "で" がみつかりました。`,
                     line: 1,
                     column: 13
+                }
+            ]
+        },
+        {
+            text: "既存のコードの利用",
+            options:{
+                strict :true
+            },
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "の" がみつかりました。`,
+                    line: 1,
+                    column: 7
                 }
             ]
         }
