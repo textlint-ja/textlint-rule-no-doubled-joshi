@@ -13,6 +13,8 @@
 
     npm install textlint-rule-no-doubled-joshi
 
+Require: textlint 5.0 >=
+
 ## Usage
 
 ### Options
