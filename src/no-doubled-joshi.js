@@ -24,9 +24,11 @@ function createSurfaceKeyMap(tokens) {
 }
 function matchExceptionRule(tokens) {
     let token = tokens[0];
+    // "の" の重なりは例外
     if (token.pos_detail_1 === "連体化") {
         return true;
     }
+    // "を" の重なりは例外
     if (token.pos_detail_1 === "格助詞" && token.surface_form === "を") {
         return true;
     }
