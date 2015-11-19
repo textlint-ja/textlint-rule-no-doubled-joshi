@@ -15,6 +15,11 @@
 
 Require: textlint 5.0 >=
 
+Dependencies
+
+- [azu/kuromojin](https://github.com/azu/kuromojin) a wrapper of [kuromoji.js](https://github.com/takuyaa/kuromoji.js "kuromoji.js")
+- [azu/sentence-splitter](https://github.com/azu/sentence-splitter)
+
 ## Usage
 
 ### Options
@@ -49,18 +54,6 @@ Require: textlint 5.0 >=
 ## Tests
 
     npm test
-
-## Contributing
-
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
-
-## License
-
-MIT
 
 ## Reference
 
@@ -104,3 +97,15 @@ MIT
 > オブジェクトを返す関数を公開する
 
 "を" の重なりは例外として許可する。
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
+
+## License
+
+MIT
