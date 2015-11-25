@@ -39,12 +39,14 @@ const defaultOptions = {
     min_interval: 1,
     strict: false
 };
+
+
 export default function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
-    let minInterval = options.min_interval || defaultOptions.min_interval;
-    let isStrict = options.strict || defaultOptions.strict;
-    let {Syntax, report, getSource, RuleError} = context;
+    const minInterval = options.min_interval || defaultOptions.min_interval;
+    const isStrict = options.strict || defaultOptions.strict;
+    const {Syntax, report, getSource, RuleError} = context;
     return {
         [Syntax.Paragraph](node){
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
@@ -89,21 +91,18 @@ export default function (context, options = {}) {
                             // if difference
                             let differenceIndex = otherPosition - startPosition;
                             if (differenceIndex <= minInterval) {
-                                console.log(node);
-                                console.log(text);
-                                console.log(sentences);
-                                console.log(sentence.loc);
-                                console.log(current.word_position);
                                 let originalPosition = source.originalPositionFor({
                                     line: sentence.loc.start.line,
                                     column: sentence.loc.start.column + (current.word_position - 1)
                                 });
-                                report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, {
+                                // padding position
+                                var padding = {
                                     line: originalPosition.line - 1,
                                     // matchLastToken.word_position start with 1
                                     // this is padding column start with 0 (== -1)
                                     column: originalPosition.column
-                                }));
+                                };
+                                report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, padding));
                             }
                             return current;
                         });
