@@ -42,10 +42,10 @@ const defaultOptions = {
 
 
 /*
-    1. Paragraph Node -> text
-    2. text -> sentences
-    3. tokenize sentence
-    4. report error if found word that match the rule.
+1. Paragraph Node -> text
+2. text -> sentences
+3. tokenize sentence
+4. report error if found word that match the rule.
 
  */
 export default function (context, options = {}) {
@@ -94,6 +94,7 @@ export default function (context, options = {}) {
                             return;// no duplicated token
                         }
                         // if found differenceIndex less than
+                        // tokes are sorted ascending order
                         tokens.reduce((prev, current) => {
                             let startPosition = joshiTokens.indexOf(prev);
                             let otherPosition = joshiTokens.indexOf(current);
