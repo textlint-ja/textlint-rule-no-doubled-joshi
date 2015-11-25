@@ -41,6 +41,13 @@ const defaultOptions = {
 };
 
 
+/*
+    1. Paragraph Node -> text
+    2. text -> sentences
+    3. tokenize sentence
+    4. report error if found word that match the rule.
+
+ */
 export default function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
@@ -54,7 +61,9 @@ export default function (context, options = {}) {
             }
             const source = new StringSource(node);
             let text = source.toString();
-            let sentences = splitSentences(text).filter(node => {
+            let sentences = splitSentences(text, {
+                charRegExp: /[。\?\!？！]/
+            }).filter(node => {
                 return node.type === SentenceSyntax.Sentence;
             });
             return getTokenizer().then(tokenizer => {
