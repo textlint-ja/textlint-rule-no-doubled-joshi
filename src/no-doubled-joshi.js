@@ -3,6 +3,7 @@
 import {RuleHelper} from "textlint-rule-helper";
 import {getTokenizer} from "kuromojin";
 import splitSentences, {Syntax as SentenceSyntax} from "sentence-splitter";
+import StringSource from "textlint-util-to-string";
 /**
  * create a object that
  * map ={
@@ -45,11 +46,12 @@ export default function (context, options = {}) {
     let isStrict = options.strict || defaultOptions.strict;
     let {Syntax, report, getSource, RuleError} = context;
     return {
-        [Syntax.Str](node){
+        [Syntax.Paragraph](node){
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
                 return;
             }
-            let text = getSource(node);
+            const source = new StringSource(node);
+            let text = source.toString();
             let sentences = splitSentences(text).filter(node => {
                 return node.type === SentenceSyntax.Sentence;
             });
@@ -73,7 +75,7 @@ export default function (context, options = {}) {
                         let tokens = joshiTokenSurfaceKeyMap[key];
                         // strict mode ではない時例外を除去する
                         if (!isStrict) {
-                            if(matchExceptionRule(tokens)) {
+                            if (matchExceptionRule(tokens)) {
                                 return;
                             }
                         }
@@ -87,11 +89,20 @@ export default function (context, options = {}) {
                             // if difference
                             let differenceIndex = otherPosition - startPosition;
                             if (differenceIndex <= minInterval) {
+                                console.log(node);
+                                console.log(text);
+                                console.log(sentences);
+                                console.log(sentence.loc);
+                                console.log(current.word_position);
+                                let originalPosition = source.originalPositionFor({
+                                    line: sentence.loc.start.line,
+                                    column: sentence.loc.start.column + (current.word_position - 1)
+                                });
                                 report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, {
-                                    line: sentence.loc.start.line - 1,
+                                    line: originalPosition.line - 1,
                                     // matchLastToken.word_position start with 1
                                     // this is padding column start with 0 (== -1)
-                                    column: sentence.loc.start.column + (current.word_position - 1)
+                                    column: originalPosition.column
                                 }));
                             }
                             return current;
