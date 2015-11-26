@@ -3,6 +3,7 @@
 import {RuleHelper} from "textlint-rule-helper";
 import {getTokenizer} from "kuromojin";
 import splitSentences, {Syntax as SentenceSyntax} from "sentence-splitter";
+import StringSource from "textlint-util-to-string";
 /**
  * create a object that
  * map ={
@@ -34,31 +35,49 @@ function matchExceptionRule(tokens) {
     }
     return false;
 }
+/*
+    default options
+ */
 const defaultOptions = {
     min_interval: 1,
     strict: false
 };
+
+
+/*
+    1. Paragraph Node -> text
+    2. text -> sentences
+    3. tokenize sentence
+    4. report error if found word that match the rule.
+
+    TODO: need abstraction
+ */
 export default function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
-    let minInterval = options.min_interval || defaultOptions.min_interval;
-    let isStrict = options.strict || defaultOptions.strict;
-    let {Syntax, report, getSource, RuleError} = context;
+    const minInterval = options.min_interval || defaultOptions.min_interval;
+    const isStrict = options.strict || defaultOptions.strict;
+    const {Syntax, report, getSource, RuleError} = context;
     return {
-        [Syntax.Str](node){
+        [Syntax.Paragraph](node){
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
                 return;
             }
-            let text = getSource(node);
-            let sentences = splitSentences(text).filter(node => {
+            const source = new StringSource(node);
+            const text = source.toString();
+            const isSentenceNode = node => {
                 return node.type === SentenceSyntax.Sentence;
-            });
+            };
+            let sentences = splitSentences(text, {
+                charRegExp: /[。\?\!？！]/
+            }).filter(isSentenceNode);
             return getTokenizer().then(tokenizer => {
                 const checkSentence = (sentence) => {
                     let tokens = tokenizer.tokenizeForSentence(sentence.raw);
-                    let joshiTokens = tokens.filter(token => {
+                    const isJoshiToken = token => {
                         return token.pos === "助詞";
-                    });
+                    };
+                    let joshiTokens = tokens.filter(isJoshiToken);
                     let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(joshiTokens);
                     /*
                     # Data Structure
@@ -73,7 +92,7 @@ export default function (context, options = {}) {
                         let tokens = joshiTokenSurfaceKeyMap[key];
                         // strict mode ではない時例外を除去する
                         if (!isStrict) {
-                            if(matchExceptionRule(tokens)) {
+                            if (matchExceptionRule(tokens)) {
                                 return;
                             }
                         }
@@ -81,18 +100,25 @@ export default function (context, options = {}) {
                             return;// no duplicated token
                         }
                         // if found differenceIndex less than
+                        // tokes are sorted ascending order
                         tokens.reduce((prev, current) => {
                             let startPosition = joshiTokens.indexOf(prev);
                             let otherPosition = joshiTokens.indexOf(current);
                             // if difference
                             let differenceIndex = otherPosition - startPosition;
                             if (differenceIndex <= minInterval) {
-                                report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, {
-                                    line: sentence.loc.start.line - 1,
+                                let originalPosition = source.originalPositionFor({
+                                    line: sentence.loc.start.line,
+                                    column: sentence.loc.start.column + (current.word_position - 1)
+                                });
+                                // padding position
+                                var padding = {
+                                    line: originalPosition.line - 1,
                                     // matchLastToken.word_position start with 1
                                     // this is padding column start with 0 (== -1)
-                                    column: sentence.loc.start.column + (current.word_position - 1)
-                                }));
+                                    column: originalPosition.column
+                                };
+                                report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, padding));
                             }
                             return current;
                         });
