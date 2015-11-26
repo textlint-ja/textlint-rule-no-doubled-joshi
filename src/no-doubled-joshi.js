@@ -42,11 +42,12 @@ const defaultOptions = {
 
 
 /*
-1. Paragraph Node -> text
-2. text -> sentences
-3. tokenize sentence
-4. report error if found word that match the rule.
+    1. Paragraph Node -> text
+    2. text -> sentences
+    3. tokenize sentence
+    4. report error if found word that match the rule.
 
+    TODO: need abstraction
  */
 export default function (context, options = {}) {
     const helper = new RuleHelper(context);
@@ -60,18 +61,20 @@ export default function (context, options = {}) {
                 return;
             }
             const source = new StringSource(node);
-            let text = source.toString();
+            const text = source.toString();
+            const isSentenceNode = node => {
+                return node.type === SentenceSyntax.Sentence;
+            };
             let sentences = splitSentences(text, {
                 charRegExp: /[。\?\!？！]/
-            }).filter(node => {
-                return node.type === SentenceSyntax.Sentence;
-            });
+            }).filter(isSentenceNode);
             return getTokenizer().then(tokenizer => {
                 const checkSentence = (sentence) => {
                     let tokens = tokenizer.tokenizeForSentence(sentence.raw);
-                    let joshiTokens = tokens.filter(token => {
+                    const isJoshiToken = token => {
                         return token.pos === "助詞";
-                    });
+                    };
+                    let joshiTokens = tokens.filter(isJoshiToken);
                     let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(joshiTokens);
                     /*
                     # Data Structure
