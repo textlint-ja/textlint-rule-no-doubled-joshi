@@ -35,6 +35,9 @@ function matchExceptionRule(tokens) {
     }
     return false;
 }
+/*
+    default options
+ */
 const defaultOptions = {
     min_interval: 1,
     strict: false
