@@ -104,6 +104,16 @@ tester.run("no-double-joshi", rule, {
                     column: 7
                 }
             ]
+        },
+        {
+            text: "これは`obj.method`は何をしているかを示します。",
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
+                    line: 1,
+                    column: 16
+                }
+            ]
         }
     ]
 });
