@@ -33,7 +33,7 @@ Dependencies
             // 助詞のtoken同士の距離が2以下ならエラー
             "min_interval" : 2,
             // 例外を許可するかどうか
-            "strict": true
+            "strict": false
         }
     }
 }
@@ -41,7 +41,8 @@ Dependencies
 
 - `min_interval` : 助詞の最低間隔値
     - 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます。
-    
+- `strict`: (default: false) 例外もエラーとするかどうか
+    - 下記参照。例外としているものもエラーとするかどうか
 
 > 私**は**彼**は**好き
 
@@ -50,19 +51,6 @@ Dependencies
 > 既存**の**文章**の**修正
 
 この場合の、**の**と**の**の間隔値は2
-
-## Tests
-
-    npm test
-
-## Reference
-
-- [Doubled Joshi Validator · Issue #460 · redpen-cc/redpen](https://github.com/redpen-cc/redpen/issues/460 "Doubled Joshi Validator · Issue #460 · redpen-cc/redpen")
-- [事象の構造から見る二重デ格構文の発生 ](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no6_papers/JCLWorkshop_No6_01.pdf "JCLWorkshop_No6_01.pdf")
-- [第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠](http://www.asca-co.com/takumi/2010/07/3.html "第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠")
-- [(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no3_papers/JCLWorkshop_No3_02.pdf "(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf")
-- [助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに](http://popoon.hatenablog.com/entry/2014/07/11/232057 "助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに")
-- [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
 
 ## 判定処理
 
@@ -97,6 +85,21 @@ Dependencies
 > オブジェクトを返す関数を公開する
 
 "を" の重なりは例外として許可する。
+
+
+## Tests
+
+    npm test
+
+## Reference
+
+- [Doubled Joshi Validator · Issue #460 · redpen-cc/redpen](https://github.com/redpen-cc/redpen/issues/460 "Doubled Joshi Validator · Issue #460 · redpen-cc/redpen")
+- [事象の構造から見る二重デ格構文の発生 ](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no6_papers/JCLWorkshop_No6_01.pdf "JCLWorkshop_No6_01.pdf")
+- [第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠](http://www.asca-co.com/takumi/2010/07/3.html "第８回：読みやすさへの工夫 3（てにおは助詞） - たくみの匠")
+- [(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no3_papers/JCLWorkshop_No3_02.pdf "(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf")
+- [助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに](http://popoon.hatenablog.com/entry/2014/07/11/232057 "助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに")
+- [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
+
 
 ## Contributing
 
