@@ -73,7 +73,11 @@ tester.run("no-double-joshi", rule, {
             ]
         },
         {
+            // 、 で間隔値が+1されるが、strictでは+されない
             text: "彼女は困り切った表情で、小声で尋ねた。",
+            options: {
+                strict: true
+            },
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "で" がみつかりました。`,

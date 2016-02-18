@@ -51,7 +51,6 @@ const defaultOptions = {
     strict: false
 };
 
-
 /*
     1. Paragraph Node -> text
     2. text -> sentences
@@ -83,6 +82,12 @@ export default function (context, options = {}) {
                 const checkSentence = (sentence) => {
                     let tokens = tokenizer.tokenizeForSentence(sentence.raw);
                     let countableTokens = tokens.filter(token => {
+                        if (isStrict) {
+                            return is助詞Token(token);
+                        }
+                        // デフォルトでは、"、"を間隔値の距離としてカウントする
+                        // "、" があると助詞同士の距離が開くようにすることで、並列的な"、"の使い方を許容する目的
+                        // https://github.com/azu/textlint-rule-no-doubled-joshi/issues/2
                         return is助詞Token(token) || is読点Token(token);
                     });
                     let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
