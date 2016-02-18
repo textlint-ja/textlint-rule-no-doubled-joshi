@@ -22,6 +22,26 @@ Dependencies
 
 ## Usage
 
+Via `.textlintrc`(推奨)
+
+```js
+{
+    "rules": {
+        "no-doubled-joshi": {
+            "min_interval" : 1,
+            "strict": false
+        }
+    }
+}
+```
+
+Via CLI
+
+```
+textlint --rule no-doubled-joshi README.md
+```
+
+
 ### Options
 
 `.textlintrc` options.
@@ -72,7 +92,7 @@ Dependencies
 
 設定が `{ strict: true }` ならばエラーとするが、デフォルトでは`{ strict: false }` となっている。
 
-#### 助詞:連体化 "の"
+### 助詞:連体化 "の"
 
 "の" の重なりは例外として許可する。
 
@@ -80,12 +100,17 @@ Dependencies
 - [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
     - "の" の消し方について
 
-#### 助詞:格助詞 "を"
+### 助詞:格助詞 "を"
 
 > オブジェクトを返す関数を公開する
 
 "を" の重なりは例外として許可する。
 
+### "、"での区切り
+
+> 右がiPhone、左がAndroidです。
+
+"、"を間隔値+1としてカウントするため、上記の文章はデフォルトでは許容される。
 
 ## Tests
 
