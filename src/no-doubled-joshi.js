@@ -4,17 +4,25 @@ import {RuleHelper} from "textlint-rule-helper";
 import {getTokenizer} from "kuromojin";
 import splitSentences, {Syntax as SentenceSyntax} from "sentence-splitter";
 import StringSource from "textlint-util-to-string";
+// 助詞どうか
+const is助詞Token = token => {
+    return token.pos === "助詞";
+};
+const is読点Token = token => {
+    return token.surface_form === "、" && token.pos === "名詞";
+};
 /**
- * create a object that
- * map ={
- *   // these token.surface_form === "Hoge"
- *  "Hoge" [token, token]
+ * Create token map object
+ * {
+ *  "で": [token, token],
+ *  "の": [token, token]
  * }
  * @param tokens
  * @returns {*}
  */
 function createSurfaceKeyMap(tokens) {
-    return tokens.reduce((keyMap, token) => {
+    // 助詞のみを対象とする
+    return tokens.filter(is助詞Token).reduce((keyMap, token) => {
         // "は" : [token]
         if (!keyMap[token.surface_form]) {
             keyMap[token.surface_form] = [];
@@ -42,7 +50,6 @@ const defaultOptions = {
     min_interval: 1,
     strict: false
 };
-
 
 /*
     1. Paragraph Node -> text
@@ -74,11 +81,16 @@ export default function (context, options = {}) {
             return getTokenizer().then(tokenizer => {
                 const checkSentence = (sentence) => {
                     let tokens = tokenizer.tokenizeForSentence(sentence.raw);
-                    const isJoshiToken = token => {
-                        return token.pos === "助詞";
-                    };
-                    let joshiTokens = tokens.filter(isJoshiToken);
-                    let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(joshiTokens);
+                    let countableTokens = tokens.filter(token => {
+                        if (isStrict) {
+                            return is助詞Token(token);
+                        }
+                        // デフォルトでは、"、"を間隔値の距離としてカウントする
+                        // "、" があると助詞同士の距離が開くようにすることで、並列的な"、"の使い方を許容する目的
+                        // https://github.com/azu/textlint-rule-no-doubled-joshi/issues/2
+                        return is助詞Token(token) || is読点Token(token);
+                    });
+                    let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
                     /*
                     # Data Structure
 
@@ -102,8 +114,8 @@ export default function (context, options = {}) {
                         // if found differenceIndex less than
                         // tokes are sorted ascending order
                         tokens.reduce((prev, current) => {
-                            let startPosition = joshiTokens.indexOf(prev);
-                            let otherPosition = joshiTokens.indexOf(current);
+                            let startPosition = countableTokens.indexOf(prev);
+                            let otherPosition = countableTokens.indexOf(current);
                             // if difference
                             let differenceIndex = otherPosition - startPosition;
                             if (differenceIndex <= minInterval) {
