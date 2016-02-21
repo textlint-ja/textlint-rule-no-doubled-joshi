@@ -41,6 +41,10 @@ function matchExceptionRule(tokens) {
     if (token.pos_detail_1 === "格助詞" && token.surface_form === "を") {
         return true;
     }
+    // 接続助詞 "て" の重なりは例外
+    if (token.pos_detail_1 === "接続助詞" && token.surface_form === "て") {
+        return true;
+    }
     return false;
 }
 /*
