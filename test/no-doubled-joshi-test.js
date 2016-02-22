@@ -2,7 +2,12 @@ import assert from "power-assert";
 import rule from "../src/no-doubled-joshi";
 import TextLintTester from "textlint-tester";
 var tester = new TextLintTester();
+/*
+    `**`のような装飾は取り除かれてから評価されているので、
+    テストでの強調という意味合いのみで利用する。
+ */
 tester.run("no-double-joshi", rule, {
+
     valid: [
         "私は彼が好きだ",
         "既存のコードの利用", // "の" の例外
@@ -11,9 +16,13 @@ tester.run("no-double-joshi", rule, {
         // 、 tokenを距離 + 1 として考える
         "右がiPhone、左がAndroidです。",
         "ナイフで切断した後、ハンマーで破砕した。",
-        "まずは試していただいて"
+        // 接続助詞のてが重複は許容
+        "まずは試していただいて",
+        // 1個目の「と」は格助詞、2個めの「と」は接続助詞
+        "ターミナルで「test」**と**入力する**と**、画面に表示されます。"
     ],
     invalid: [
+        // エラー位置は最後の助詞の位置を表示する
         {
             text: "私は彼は好きだ",
             errors: [
@@ -120,6 +129,15 @@ tester.run("no-double-joshi", rule, {
                     message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
                     line: 1,
                     column: 16
+                }
+            ]
+        }, {
+            text: "これとあれとそれを持ってきて。",
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "と" がみつかりました。`,
+                    line: 1,
+                    column: 6
                 }
             ]
         }
