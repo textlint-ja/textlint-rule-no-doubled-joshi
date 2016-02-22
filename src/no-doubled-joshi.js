@@ -5,11 +5,20 @@ import {getTokenizer} from "kuromojin";
 import splitSentences, {Syntax as SentenceSyntax} from "sentence-splitter";
 import StringSource from "textlint-util-to-string";
 // 助詞どうか
-const is助詞Token = token => {
+const is助詞Token = (token) => {
     return token.pos === "助詞";
 };
-const is読点Token = token => {
+const is読点Token = (token) => {
     return token.surface_form === "、" && token.pos === "名詞";
+};
+// 助詞tokenから品詞細分類1までを元にしたkeyを作る
+const createKeyFromKey = (token) => {
+    // e.g.) は:助詞.係助詞
+    return `${token.surface_form}:${token.pos}.${token.pos_detail_1}`
+};
+// keyからsurfaceを取り出す
+const restoreToSurfaceFromKey = (key) => {
+    return key.split(":")[0];
 };
 /**
  * Create token map object
@@ -23,11 +32,12 @@ const is読点Token = token => {
 function createSurfaceKeyMap(tokens) {
     // 助詞のみを対象とする
     return tokens.filter(is助詞Token).reduce((keyMap, token) => {
-        // "は" : [token]
-        if (!keyMap[token.surface_form]) {
-            keyMap[token.surface_form] = [];
+        // "は:助詞.係助詞" : [token]
+        const tokenKey = createKeyFromKey(token);
+        if (!keyMap[tokenKey]) {
+            keyMap[tokenKey] = [];
         }
-        keyMap[token.surface_form].push(token);
+        keyMap[tokenKey].push(token);
         return keyMap;
     }, {});
 }
@@ -100,12 +110,13 @@ export default function (context, options = {}) {
 
                         joshiTokens = [tokenA, tokenB, tokenC, tokenD, tokenE, tokenF]
                         joshiTokenSurfaceKeyMap = {
-                            "は": [tokenA, tokenC, tokenE],
-                            "で": [tokenB, tokenD, tokenF]
+                            "は:助詞.係助詞": [tokenA, tokenC, tokenE],
+                            "で:助詞.係助詞": [tokenB, tokenD, tokenF]
                         }
                      */
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
-                        let tokens = joshiTokenSurfaceKeyMap[key];
+                        const tokens = joshiTokenSurfaceKeyMap[key];
+                        const joshiName = restoreToSurfaceFromKey(key);
                         // strict mode ではない時例外を除去する
                         if (!isStrict) {
                             if (matchExceptionRule(tokens)) {
@@ -134,7 +145,7 @@ export default function (context, options = {}) {
                                     // this is padding column start with 0 (== -1)
                                     column: originalPosition.column
                                 };
-                                report(node, new RuleError(`一文に二回以上利用されている助詞 "${key}" がみつかりました。`, padding));
+                                report(node, new RuleError(`一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`, padding));
                             }
                             return current;
                         });
