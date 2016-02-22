@@ -129,17 +129,17 @@ export default function (context, options = {}) {
                         // if found differenceIndex less than
                         // tokes are sorted ascending order
                         tokens.reduce((prev, current) => {
-                            let startPosition = countableTokens.indexOf(prev);
-                            let otherPosition = countableTokens.indexOf(current);
-                            // if difference
-                            let differenceIndex = otherPosition - startPosition;
+                            const startPosition = countableTokens.indexOf(prev);
+                            const otherPosition = countableTokens.indexOf(current);
+                            // 助詞token同士の距離が設定値以下ならエラーを報告する
+                            const differenceIndex = otherPosition - startPosition;
                             if (differenceIndex <= minInterval) {
-                                let originalPosition = source.originalPositionFor({
+                                const originalPosition = source.originalPositionFor({
                                     line: sentence.loc.start.line,
                                     column: sentence.loc.start.column + (current.word_position - 1)
                                 });
-                                // padding position
-                                var padding = {
+                                // padding positionを計算する
+                                const padding = {
                                     line: originalPosition.line - 1,
                                     // matchLastToken.word_position start with 1
                                     // this is padding column start with 0 (== -1)
