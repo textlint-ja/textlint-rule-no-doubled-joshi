@@ -130,7 +130,7 @@ textlint --rule no-doubled-joshi README.md
 - [(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf](https://www.ninjal.ac.jp/event/specialists/project-meeting/files/JCLWorkshop_no3_papers/JCLWorkshop_No3_02.pdf "(Microsoft Word - JCLWorkshop2013_2\214\303\213{.doc) - JCLWorkshop_No3_02.pdf")
 - [助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに](http://popoon.hatenablog.com/entry/2014/07/11/232057 "助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに")
 - [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
-
+- [形態素解析ツールの品詞体系](http://www.unixuser.org/~euske/doc/postag/index.html#chasen "形態素解析ツールの品詞体系")
 
 ## Contributing
 

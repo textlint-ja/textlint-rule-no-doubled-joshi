@@ -116,7 +116,7 @@ export default function (context, options = {}) {
                         }
                         // if found differenceIndex less than
                         // tokes are sorted ascending order
-                        var reduder = (prev, current) => {
+                        tokens.reduce((prev, current) => {
                             const startPosition = countableTokens.indexOf(prev);
                             const otherPosition = countableTokens.indexOf(current);
                             // 助詞token同士の距離が設定値以下ならエラーを報告する
@@ -136,8 +136,7 @@ export default function (context, options = {}) {
                                 report(node, new RuleError(`一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`, padding));
                             }
                             return current;
-                        };
-                        tokens.reduce(reduder);
+                        });
                     });
                 };
                 sentences.forEach(checkSentence);
