@@ -4,22 +4,10 @@ import {RuleHelper} from "textlint-rule-helper";
 import {getTokenizer} from "kuromojin";
 import splitSentences, {Syntax as SentenceSyntax} from "sentence-splitter";
 import StringSource from "textlint-util-to-string";
-// 助詞どうか
-const is助詞Token = (token) => {
-    return token.pos === "助詞";
-};
-const is読点Token = (token) => {
-    return token.surface_form === "、" && token.pos === "名詞";
-};
-// 助詞tokenから品詞細分類1までを元にしたkeyを作る
-const createKeyFromKey = (token) => {
-    // e.g.) は:助詞.係助詞
-    return `${token.surface_form}:${token.pos}.${token.pos_detail_1}`
-};
-// keyからsurfaceを取り出す
-const restoreToSurfaceFromKey = (key) => {
-    return key.split(":")[0];
-};
+import {
+    is助詞Token, is読点Token,
+    createKeyFromKey, restoreToSurfaceFromKey
+} from "./token-utils";
 /**
  * Create token map object
  * {
@@ -128,7 +116,7 @@ export default function (context, options = {}) {
                         }
                         // if found differenceIndex less than
                         // tokes are sorted ascending order
-                        tokens.reduce((prev, current) => {
+                        var reduder = (prev, current) => {
                             const startPosition = countableTokens.indexOf(prev);
                             const otherPosition = countableTokens.indexOf(current);
                             // 助詞token同士の距離が設定値以下ならエラーを報告する
@@ -148,7 +136,8 @@ export default function (context, options = {}) {
                                 report(node, new RuleError(`一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`, padding));
                             }
                             return current;
-                        });
+                        };
+                        tokens.reduce(reduder);
                     });
                 };
                 sentences.forEach(checkSentence);
