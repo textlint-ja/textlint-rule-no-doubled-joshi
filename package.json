@@ -38,12 +38,12 @@
     "espower-babel": "^4.0.0",
     "mocha": "^2.3.4",
     "power-assert": "^1.1.0",
-    "textlint": "^5.0.2",
-    "textlint-tester": "^0.4.0"
+    "textlint": "^6.0.3",
+    "textlint-tester": "^1.2.0"
   },
   "dependencies": {
     "kuromojin": "^1.0.2",
-    "sentence-splitter": "^1.0.1",
+    "sentence-splitter": "^2.0.0",
     "textlint-rule-helper": "^1.1.4",
     "textlint-util-to-string": "^1.1.0"
   }

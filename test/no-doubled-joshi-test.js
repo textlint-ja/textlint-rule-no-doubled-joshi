@@ -1,7 +1,6 @@
-import assert from "power-assert";
 import rule from "../src/no-doubled-joshi";
 import TextLintTester from "textlint-tester";
-var tester = new TextLintTester();
+const tester = new TextLintTester();
 /*
     `**`のような装飾は取り除かれてから評価されているので、
     テストでの強調という意味合いのみで利用する。

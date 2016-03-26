@@ -2,7 +2,7 @@
 "use strict";
 import {RuleHelper} from "textlint-rule-helper";
 import {getTokenizer} from "kuromojin";
-import splitSentences, {Syntax as SentenceSyntax} from "sentence-splitter";
+import {split as splitSentences, Syntax as SentenceSyntax} from "sentence-splitter";
 import StringSource from "textlint-util-to-string";
 import {
     is助詞Token, is読点Token,
