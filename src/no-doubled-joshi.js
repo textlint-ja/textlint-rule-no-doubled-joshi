@@ -46,7 +46,7 @@ function matchExceptionRule(tokens) {
     return false;
 }
 /*
-    default options
+ default options
  */
 const defaultOptions = {
     min_interval: 1,
@@ -54,12 +54,12 @@ const defaultOptions = {
 };
 
 /*
-    1. Paragraph Node -> text
-    2. text -> sentences
-    3. tokenize sentence
-    4. report error if found word that match the rule.
+ 1. Paragraph Node -> text
+ 2. text -> sentences
+ 3. tokenize sentence
+ 4. report error if found word that match the rule.
 
-    TODO: need abstraction
+ TODO: need abstraction
  */
 export default function (context, options = {}) {
     const helper = new RuleHelper(context);
@@ -94,13 +94,13 @@ export default function (context, options = {}) {
                     });
                     let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
                     /*
-                    # Data Structure
+                     # Data Structure
 
-                        joshiTokens = [tokenA, tokenB, tokenC, tokenD, tokenE, tokenF]
-                        joshiTokenSurfaceKeyMap = {
-                            "は:助詞.係助詞": [tokenA, tokenC, tokenE],
-                            "で:助詞.係助詞": [tokenB, tokenD, tokenF]
-                        }
+                     joshiTokens = [tokenA, tokenB, tokenC, tokenD, tokenE, tokenF]
+                     joshiTokenSurfaceKeyMap = {
+                     "は:助詞.係助詞": [tokenA, tokenC, tokenE],
+                     "で:助詞.係助詞": [tokenB, tokenD, tokenF]
+                     }
                      */
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
                         const tokens = joshiTokenSurfaceKeyMap[key];

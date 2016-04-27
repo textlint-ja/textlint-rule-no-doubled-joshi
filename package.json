@@ -42,7 +42,7 @@
     "textlint-tester": "^1.2.0"
   },
   "dependencies": {
-    "kuromojin": "^1.0.2",
+    "kuromojin": "^1.2.1",
     "sentence-splitter": "^2.0.0",
     "textlint-rule-helper": "^1.1.4",
     "textlint-util-to-string": "^1.1.0"
