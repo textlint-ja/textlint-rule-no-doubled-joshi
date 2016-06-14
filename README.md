@@ -6,7 +6,7 @@
 
 > 材料不足で代替素材で製品を作った。
 
-**で** という助詞が一文で複数回でてきている。
+**で** という助詞が一文で複数回でてきているのをチェックすることができます。
 
 
 ## Installation
@@ -87,7 +87,9 @@ textlint --rule no-doubled-joshi README.md
 
 > この書籍はJavaScriptのライブラリやツールにおけるプラグインアーキテクチャを見ていく事を目的としたものです
 
-この場合 "を" が最低間隔値2で並んでいるためエラーとするべき。
+この場合 "を" が最低間隔値2で並んでいるため、デフォルト設定ではエラーとしている。
+
+助詞にはどのようなものがあるかは次のサイトで確認できます。
 
 - [kuromoji.js demo](http://takuyaa.github.io/kuromoji.js/demo/tokenize.html "kuromoji.js demo")
 
