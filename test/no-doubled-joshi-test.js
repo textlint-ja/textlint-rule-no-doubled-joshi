@@ -22,7 +22,7 @@ tester.run("no-double-joshi", rule, {
         {
             text: "太字も強調も同じように無視されます。",
             options: {allow: ["も"]}
-        },
+        }
     ],
     invalid: [
         // エラー位置は最後の助詞の位置を表示する
