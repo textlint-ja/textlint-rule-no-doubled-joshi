@@ -50,7 +50,8 @@ function matchExceptionRule(tokens) {
  */
 const defaultOptions = {
     min_interval: 1,
-    strict: false
+    strict: false,
+    allow: []
 };
 
 /*
@@ -66,6 +67,7 @@ export default function (context, options = {}) {
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
+    const allow = options.allow || defaultOptions.allow;
     const {Syntax, report, getSource, RuleError} = context;
     return {
         [Syntax.Paragraph](node){
@@ -105,6 +107,10 @@ export default function (context, options = {}) {
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
                         const tokens = joshiTokenSurfaceKeyMap[key];
                         const joshiName = restoreToSurfaceFromKey(key);
+                        // check allow
+                        if (allow.indexOf(joshiName) >= 0) {
+                            return;
+                        }
                         // strict mode ではない時例外を除去する
                         if (!isStrict) {
                             if (matchExceptionRule(tokens)) {
