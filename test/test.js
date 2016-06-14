@@ -13,10 +13,12 @@ describe("example-test", function () {
             assert.equal(result.messages.length, 1);
             let message = result.messages[0];
             assert.deepEqual(message, {
+                type: "lint",
                 ruleId: 'no-doubled-joshi',
                 message: '一文に二回以上利用されている助詞 "で" がみつかりました。',
                 line: 4,
                 column: 43,
+                index: 137,
                 severity: 2
             });
         });
