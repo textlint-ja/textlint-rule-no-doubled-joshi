@@ -30,7 +30,7 @@ Via `.textlintrc`(推奨)
         "no-doubled-joshi": {
             "min_interval" : 1,
             "strict": false,
-            "allowed_joshi": []
+            "allow": []
         }
     }
 }
@@ -56,7 +56,7 @@ textlint --rule no-doubled-joshi README.md
             // 例外を許可するかどうか
             "strict": false,
             // 助詞のうち「も」「や」は複数回の出現を許す
-            "allowed_joshi": ["も","や"]
+            "allow": ["も","や"]
         }
     }
 }
@@ -66,7 +66,7 @@ textlint --rule no-doubled-joshi README.md
     - 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます。
 - `strict`(default: false) :例外もエラーとするかどうか
     - 下記参照。例外としているものもエラーとするかどうか
-- `allowed_joshi`(default: []) :複数回の出現を許す助詞
+- `allow`(default: []) :複数回の出現を許す助詞
     - 並立の助詞など、複数回出現しても無視する助詞を指定します。
 
 > 私**は**彼**は**好き

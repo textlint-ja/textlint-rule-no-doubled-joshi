@@ -21,7 +21,7 @@ tester.run("no-double-joshi", rule, {
         "ターミナルで「test」**と**入力する**と**、画面に表示されます。",
         {
             text: "太字も強調も同じように無視されます。",
-            options: {allowed_joshi: ["も"]}
+            options: {allow: ["も"]}
         },
     ],
     invalid: [
