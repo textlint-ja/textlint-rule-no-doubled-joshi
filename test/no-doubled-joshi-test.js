@@ -143,6 +143,19 @@ tester.run("no-double-joshi", rule, {
                     column: 6
                 }
             ]
+        },{
+            text: `この行にはtextlintによる警告は出ない。
+この行にはtextlintにより警告が発せられる。この行に何かしようとすると起きるという
+この行にはtextlintによる警告は出ない。
+`,
+            ext: ".txt",
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "と" がみつかりました。`,
+                    line: 2,
+                    column: 38
+                }
+            ]
         }
     ]
 });
