@@ -62,7 +62,7 @@ const defaultOptions = {
 
  TODO: need abstraction
  */
-export default function (context, options = {}) {
+export default function(context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;
@@ -128,16 +128,13 @@ export default function (context, options = {}) {
                             // 助詞token同士の距離が設定値以下ならエラーを報告する
                             const differenceIndex = otherPosition - startPosition;
                             if (differenceIndex <= minInterval) {
-                                const originalPosition = source.originalPositionFor({
+                                const originalIndex = source.originalIndexFromPosition({
                                     line: sentence.loc.start.line,
                                     column: sentence.loc.start.column + (current.word_position - 1)
                                 });
                                 // padding positionを計算する
                                 const padding = {
-                                    line: originalPosition.line - 1,
-                                    // matchLastToken.word_position start with 1
-                                    // this is padding column start with 0 (== -1)
-                                    column: originalPosition.column
+                                    index: originalIndex
                                 };
                                 report(node, new RuleError(`一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`, padding));
                             }
