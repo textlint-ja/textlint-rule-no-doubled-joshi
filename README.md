@@ -1,4 +1,4 @@
-# textlint-rule-no-doubled-joshi [![Build Status](https://travis-ci.org/azu/textlint-rule-no-doubled-joshi.svg?branch=master)](https://travis-ci.org/azu/textlint-rule-no-doubled-joshi)
+# textlint-rule-no-doubled-joshi [![Build Status](https://travis-ci.org/textlint-ja/textlint-rule-no-doubled-joshi.svg?branch=master)](https://travis-ci.org/textlint-ja/textlint-rule-no-doubled-joshi)
 
 文中に同じ助詞が複数出てくるのをチェックする[textlint](https://github.com/textlint/textlint "textlint")ルールです。
 
