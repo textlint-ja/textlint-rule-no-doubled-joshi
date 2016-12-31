@@ -28,8 +28,9 @@
     "test": "mocha"
   },
   "keywords": [
+    "rule",
     "textlint",
-    "rule"
+    "textlintrule"
   ],
   "devDependencies": {
     "babel-cli": "^6.1.18",
