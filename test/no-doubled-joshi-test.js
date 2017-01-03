@@ -22,6 +22,11 @@ tester.run("no-double-joshi", rule, {
         {
             text: "太字も強調も同じように無視されます。",
             options: {allow: ["も"]}
+        },
+        // 全角ピリオドを文区切り文字に含める
+        {
+            text: "画面に表示されます．それ以外には表示されません．",
+            options: {separatorChars: ["。","．","?","!","？","！"]}
         }
     ],
     invalid: [
