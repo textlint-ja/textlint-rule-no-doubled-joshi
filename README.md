@@ -56,7 +56,9 @@ textlint --rule no-doubled-joshi README.md
             // 例外を許可するかどうか
             "strict": false,
             // 助詞のうち「も」「や」は複数回の出現を許す
-            "allow": ["も","や"]
+            "allow": ["も","や"],
+            // 文区切り文字の正規表現
+            "charRegExp": /[。\?\!？！]/
         }
     }
 }
@@ -68,6 +70,8 @@ textlint --rule no-doubled-joshi README.md
     - 下記参照。例外としているものもエラーとするかどうか
 - `allow`(default: []) :複数回の出現を許す助詞
     - 並立の助詞など、複数回出現しても無視する助詞を指定します。
+- `charRegExp`(default: /[。\?\!？！]/) : 文区切り文字の正規表現
+    - ピリオドや全角ピリオドを句点とする文章を評価するときは明示的に指定します。
 
 > 私**は**彼**は**好き
 
