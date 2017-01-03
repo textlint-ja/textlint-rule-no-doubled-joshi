@@ -51,7 +51,8 @@ function matchExceptionRule(tokens) {
 const defaultOptions = {
     min_interval: 1,
     strict: false,
-    allow: []
+    allow: [],
+    separatorChars: ["。", "?", "!", "？", "！"]
 };
 
 /*
@@ -68,6 +69,7 @@ export default function(context, options = {}) {
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
+    const separatorChars = options.separatorChars || defaultOptions.separatorChars;
     const {Syntax, report, getSource, RuleError} = context;
     return {
         [Syntax.Paragraph](node){
@@ -80,7 +82,7 @@ export default function(context, options = {}) {
                 return node.type === SentenceSyntax.Sentence;
             };
             let sentences = splitSentences(text, {
-                charRegExp: /[。\?\!？！]/
+                separatorChars: separatorChars
             }).filter(isSentenceNode);
             return getTokenizer().then(tokenizer => {
                 const checkSentence = (sentence) => {
