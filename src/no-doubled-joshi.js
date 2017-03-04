@@ -90,6 +90,8 @@ export default function(context, options = {}) {
                     const tokens = tokenizer.tokenizeForSentence(sentence.raw);
                     // 助詞 + 助詞は 一つの助詞として扱う
                     // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
+                    // 連語(助詞)の対応
+                    // http://www.weblio.jp/parts-of-speech/%E9%80%A3%E8%AA%9E(%E5%8A%A9%E8%A9%9E)_1
                     const concatTokens = concatJoishiTokens(tokens);
                     const countableTokens = concatTokens.filter(token => {
                         if (isStrict) {
