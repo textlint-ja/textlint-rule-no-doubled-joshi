@@ -20,7 +20,7 @@ import {
  */
 function createSurfaceKeyMap(tokens) {
     // 助詞のみを対象とする
-    return tokens.reduce((keyMap, token) => {
+    return tokens.filter(is助詞Token).reduce((keyMap, token) => {
         // "は:助詞.係助詞" : [token]
         const tokenKey = createKeyFromKey(token);
         if (!keyMap[tokenKey]) {

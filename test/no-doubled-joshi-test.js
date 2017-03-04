@@ -21,6 +21,8 @@ tester.run("no-double-joshi", rule, {
         "そのため、文字列の長さを正確に測るにはある程度の妥協が必要になります。",
         "そんな事で言うべきではない。",
         "言うのは簡単の法則。",
+        // fix regression - https://travis-ci.org/textlint-ja/textlint-rule-preset-ja-technical-writing/builds/207700760#L720
+        "慣用的表現、熟語、概数、固有名詞、副詞など、漢数字を使用することが一般的な語句では漢数字を使います。",
         // 1個目の「と」は格助詞、2個めの「と」は接続助詞
         "ターミナルで「test」**と**入力する**と**、画面に表示されます。",
         {
