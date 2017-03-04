@@ -6,20 +6,21 @@ import {split as splitSentences, Syntax as SentenceSyntax} from "sentence-splitt
 import StringSource from "textlint-util-to-string";
 import {
     is助詞Token, is読点Token,
-    createKeyFromKey, restoreToSurfaceFromKey
+    concatJoishiTokens,
+    createKeyFromKey,
+    restoreToSurfaceFromKey
 } from "./token-utils";
 /**
  * Create token map object
  * {
- *  "で": [token, token],
- *  "の": [token, token]
+ *  "は:助詞.係助詞": [token, token]
  * }
  * @param tokens
  * @returns {*}
  */
 function createSurfaceKeyMap(tokens) {
     // 助詞のみを対象とする
-    return tokens.filter(is助詞Token).reduce((keyMap, token) => {
+    return tokens.reduce((keyMap, token) => {
         // "は:助詞.係助詞" : [token]
         const tokenKey = createKeyFromKey(token);
         if (!keyMap[tokenKey]) {
@@ -70,7 +71,7 @@ export default function(context, options = {}) {
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
     const separatorChars = options.separatorChars || defaultOptions.separatorChars;
-    const {Syntax, report, getSource, RuleError} = context;
+    const {Syntax, report, RuleError} = context;
     return {
         [Syntax.Paragraph](node){
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
@@ -81,13 +82,18 @@ export default function(context, options = {}) {
             const isSentenceNode = node => {
                 return node.type === SentenceSyntax.Sentence;
             };
-            let sentences = splitSentences(text, {
+            const sentences = splitSentences(text, {
                 separatorChars: separatorChars
             }).filter(isSentenceNode);
             return getTokenizer().then(tokenizer => {
                 const checkSentence = (sentence) => {
-                    let tokens = tokenizer.tokenizeForSentence(sentence.raw);
-                    let countableTokens = tokens.filter(token => {
+                    const tokens = tokenizer.tokenizeForSentence(sentence.raw);
+                    // 助詞 + 助詞は 一つの助詞として扱う
+                    // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
+                    // 連語(助詞)の対応
+                    // http://www.weblio.jp/parts-of-speech/%E9%80%A3%E8%AA%9E(%E5%8A%A9%E8%A9%9E)_1
+                    const concatTokens = concatJoishiTokens(tokens);
+                    const countableTokens = concatTokens.filter(token => {
                         if (isStrict) {
                             return is助詞Token(token);
                         }
@@ -96,14 +102,14 @@ export default function(context, options = {}) {
                         // https://github.com/azu/textlint-rule-no-doubled-joshi/issues/2
                         return is助詞Token(token) || is読点Token(token);
                     });
-                    let joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
+                    const joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
                     /*
                      # Data Structure
 
                      joshiTokens = [tokenA, tokenB, tokenC, tokenD, tokenE, tokenF]
                      joshiTokenSurfaceKeyMap = {
-                     "は:助詞.係助詞": [tokenA, tokenC, tokenE],
-                     "で:助詞.係助詞": [tokenB, tokenD, tokenF]
+                         "は:助詞.係助詞": [tokenA, tokenC, tokenE],
+                         "で:助詞.係助詞": [tokenB, tokenD, tokenF]
                      }
                      */
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
