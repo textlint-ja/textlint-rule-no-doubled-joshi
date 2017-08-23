@@ -58,7 +58,7 @@ textlint --rule no-doubled-joshi README.md
             // 助詞のうち「も」「や」は複数回の出現を許す
             "allow": ["も","や"],
             // 文区切り文字の配列
-            "separatorChars": ["。",,"?","!","？","！"]
+            "separatorChars": ["。","?","!","？","！"]
         }
     }
 }
