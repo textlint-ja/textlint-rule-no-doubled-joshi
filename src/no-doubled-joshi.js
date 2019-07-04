@@ -64,7 +64,7 @@ const defaultOptions = {
 
  TODO: need abstraction
  */
-export default function(context, options = {}) {
+module.exports = function(context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;

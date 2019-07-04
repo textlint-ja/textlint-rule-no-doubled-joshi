@@ -1,1 +1,1 @@
---compilers js:espower-babel/guess
+--require textlint-scripts/register
