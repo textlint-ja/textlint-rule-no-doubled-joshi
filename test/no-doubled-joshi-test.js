@@ -179,6 +179,21 @@ tester.run("no-double-joshi", rule, {
                     column: 8
                 }
             ]
+        },
+        //
+        {
+            text: `今まで「サイトはNetlify」「スライドはGitLab Pages」といった配信分けをしていたのですが、
+「 \`/slides\` にビルドしたスライドを置きたい」という動機のものと、こんな構成を検討しています。
+
+* 最初にtextlintで文法チェック
+* ドキュメントを別にビルドしてarticle化
+* 複数articleを束ねてFirebaseへデプロイ`,
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
+                    index: 21
+                }
+            ]
         }
     ]
 });

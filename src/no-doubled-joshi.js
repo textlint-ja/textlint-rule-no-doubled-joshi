@@ -2,7 +2,7 @@
 "use strict";
 import {RuleHelper} from "textlint-rule-helper";
 import {getTokenizer} from "kuromojin";
-import {split as splitSentences, Syntax as SentenceSyntax} from "sentence-splitter";
+import {splitAST as splitSentences, Syntax as SentenceSyntax} from "sentence-splitter";
 import StringSource from "textlint-util-to-string";
 import {
     is助詞Token, is読点Token,
@@ -10,6 +10,7 @@ import {
     createKeyFromKey,
     restoreToSurfaceFromKey
 } from "./token-utils";
+
 /**
  * Create token map object
  * {
@@ -30,6 +31,7 @@ function createSurfaceKeyMap(tokens) {
         return keyMap;
     }, {});
 }
+
 function matchExceptionRule(tokens) {
     let token = tokens[0];
     // "の" の重なりは例外
@@ -46,6 +48,7 @@ function matchExceptionRule(tokens) {
     }
     return false;
 }
+
 /*
  default options
  */
@@ -64,7 +67,7 @@ const defaultOptions = {
 
  TODO: need abstraction
  */
-module.exports = function(context, options = {}) {
+module.exports = function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;
@@ -73,21 +76,20 @@ module.exports = function(context, options = {}) {
     const separatorChars = options.separatorChars || defaultOptions.separatorChars;
     const {Syntax, report, RuleError} = context;
     return {
-        [Syntax.Paragraph](node){
+        [Syntax.Paragraph](node) {
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
                 return;
             }
-            const source = new StringSource(node);
-            const text = source.toString();
             const isSentenceNode = node => {
                 return node.type === SentenceSyntax.Sentence;
             };
-            const sentences = splitSentences(text, {
-                separatorChars: separatorChars
-            }).filter(isSentenceNode);
+            const txtParentNode = splitSentences(node);
+            const sentences = txtParentNode.children.filter(isSentenceNode);
             return getTokenizer().then(tokenizer => {
                 const checkSentence = (sentence) => {
-                    const tokens = tokenizer.tokenizeForSentence(sentence.raw);
+                    const sentenceSource = new StringSource(sentence);
+                    const text = sentenceSource.toString();
+                    const tokens = tokenizer.tokenizeForSentence(text);
                     // 助詞 + 助詞は 一つの助詞として扱う
                     // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
                     // 連語(助詞)の対応
@@ -136,15 +138,11 @@ module.exports = function(context, options = {}) {
                             // 助詞token同士の距離が設定値以下ならエラーを報告する
                             const differenceIndex = otherPosition - startPosition;
                             if (differenceIndex <= minInterval) {
-                                const originalIndex = source.originalIndexFromPosition({
-                                    line: sentence.loc.start.line,
-                                    column: sentence.loc.start.column + (current.word_position - 1)
-                                });
                                 // padding positionを計算する
-                                const padding = {
+                                const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
+                                report(sentence, new RuleError(`一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`, {
                                     index: originalIndex
-                                };
-                                report(node, new RuleError(`一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`, padding));
+                                }));
                             }
                             return current;
                         });
