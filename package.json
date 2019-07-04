@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "kuromojin": "^1.2.1",
-    "sentence-splitter": "^2.2.0",
+    "sentence-splitter": "^3.0.11",
     "textlint-rule-helper": "^2.1.1",
     "textlint-util-to-string": "^2.1.1"
   }
