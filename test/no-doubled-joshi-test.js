@@ -1,5 +1,5 @@
-import rule from "../src/no-doubled-joshi";
 import TextLintTester from "textlint-tester";
+const rule = require("../src/no-doubled-joshi");
 const tester = new TextLintTester();
 /*
     `**`のような装飾は取り除かれてから評価されているので、
