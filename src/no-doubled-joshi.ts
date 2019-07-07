@@ -1,15 +1,17 @@
 // LICENSE : MIT
 "use strict";
 import {RuleHelper} from "textlint-rule-helper";
-import {getTokenizer} from "kuromojin";
-import {splitAST as splitSentences, Syntax as SentenceSyntax} from "sentence-splitter";
-import StringSource from "textlint-util-to-string";
+import {splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode} from "sentence-splitter";
+const StringSource = require("textlint-util-to-string");
+const {getTokenizer} = require("kuromojin");
 import {
     is助詞Token, is読点Token,
     concatJoishiTokens,
     createKeyFromKey,
-    restoreToSurfaceFromKey
+    restoreToSurfaceFromKey, Token
 } from "./token-utils";
+import {TextlintRuleModule} from "@textlint/types";
+import {TxtNode} from "@textlint/types/lib/ast-node-types/src";
 
 /**
  * Create token map object
@@ -19,7 +21,7 @@ import {
  * @param tokens
  * @returns {*}
  */
-function createSurfaceKeyMap(tokens) {
+function createSurfaceKeyMap(tokens: Token[]) {
     // 助詞のみを対象とする
     return tokens.filter(is助詞Token).reduce((keyMap, token) => {
         // "は:助詞.係助詞" : [token]
@@ -32,7 +34,7 @@ function createSurfaceKeyMap(tokens) {
     }, {});
 }
 
-function matchExceptionRule(tokens) {
+function matchExceptionRule(tokens: Token[]) {
     let token = tokens[0];
     // "の" の重なりは例外
     if (token.pos_detail_1 === "連体化") {
@@ -73,20 +75,19 @@ module.exports = function (context, options = {}) {
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
-    const separatorChars = options.separatorChars || defaultOptions.separatorChars;
     const {Syntax, report, RuleError} = context;
     return {
         [Syntax.Paragraph](node) {
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
                 return;
             }
-            const isSentenceNode = node => {
+            const isSentenceNode = (node: TxtNode): node is SentenceNode => {
                 return node.type === SentenceSyntax.Sentence;
             };
             const txtParentNode = splitSentences(node);
             const sentences = txtParentNode.children.filter(isSentenceNode);
-            return getTokenizer().then(tokenizer => {
-                const checkSentence = (sentence) => {
+            return getTokenizer().then((tokenizer: any) => {
+                const checkSentence = (sentence: SentenceNode) => {
                     const sentenceSource = new StringSource(sentence);
                     const text = sentenceSource.toString();
                     const tokens = tokenizer.tokenizeForSentence(text);
@@ -115,7 +116,7 @@ module.exports = function (context, options = {}) {
                      }
                      */
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
-                        const tokens = joshiTokenSurfaceKeyMap[key];
+                        const tokens: Token[] = joshiTokenSurfaceKeyMap[key];
                         const joshiName = restoreToSurfaceFromKey(key);
                         // check allow
                         if (allow.indexOf(joshiName) >= 0) {
@@ -148,8 +149,8 @@ module.exports = function (context, options = {}) {
                         });
                     });
                 };
-                sentences.forEach(checkSentence);
+                sentences.forEach(node => checkSentence(node))
             });
         }
     }
-};
+} as TextlintRuleModule;

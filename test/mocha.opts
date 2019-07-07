@@ -1,1 +1,1 @@
---require textlint-scripts/register
+--require textlint-scripts/register-ts

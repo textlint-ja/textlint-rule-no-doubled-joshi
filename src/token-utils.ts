@@ -1,12 +1,15 @@
 // LICENSE : MIT
 "use strict";
+export type Token = {
+    [index: string]: any;
+}
 // 助詞どうか
-export const is助詞Token = (token) => {
+export const is助詞Token = (token: Token) => {
     // 結合しているtokenは助詞助詞のようになってるため先頭一致で見る
     return token && /^助詞/.test(token.pos);
 };
 
-export const is読点Token = (token) => {
+export const is読点Token = (token: Token) => {
     return token.surface_form === "、" && token.pos === "名詞";
 };
 /**
@@ -15,7 +18,7 @@ export const is読点Token = (token) => {
  * @param {Object} bToken
  * @returns {Object}
  */
-const concatToken = (aToken, bToken) => {
+const concatToken = (aToken: Token, bToken: Token) => {
     aToken.surface_form += bToken.surface_form;
     aToken.pos += bToken.pos;
     aToken.pos_detail_1 += bToken.surface_form;
@@ -26,8 +29,8 @@ const concatToken = (aToken, bToken) => {
  * @param {Array} tokens
  * @returns {Array}
  */
-export const concatJoishiTokens = (tokens) => {
-    const newTokens = [];
+export const concatJoishiTokens = (tokens: Token[]) => {
+    const newTokens: Token[] = [];
     tokens.forEach((token) => {
         const prevToken = newTokens[newTokens.length - 1];
         if (is助詞Token(token) && is助詞Token(prevToken)) {
@@ -41,11 +44,11 @@ export const concatJoishiTokens = (tokens) => {
 // 助詞tokenから品詞細分類1までを元にしたkeyを作る
 // http://www.unixuser.org/~euske/doc/postag/index.html#chasen
 // http://chasen.naist.jp/snapshot/ipadic/ipadic/doc/ipadic-ja.pdf
-export const createKeyFromKey = (token) => {
+export const createKeyFromKey = (token: Token) => {
     // e.g.) "は:助詞.係助詞"
     return `${token.surface_form}:${token.pos}.${token.pos_detail_1}`;
 };
 // keyからsurfaceを取り出す
-export const restoreToSurfaceFromKey = (key) => {
+export const restoreToSurfaceFromKey = (key: string) => {
     return key.split(":")[0];
 };
