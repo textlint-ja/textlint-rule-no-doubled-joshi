@@ -33,14 +33,14 @@
     "textlintrule"
   ],
   "devDependencies": {
-    "@types/node": "^12.0.12",
     "@textlint/types": "^1.1.5",
+    "@types/node": "^12.0.12",
     "textlint-scripts": "^3.0.0-beta.1",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "kuromojin": "^1.2.1",
+    "kuromojin": "^2.0.0",
     "sentence-splitter": "^3.0.11",
     "textlint-rule-helper": "^2.1.1",
     "textlint-util-to-string": "^2.1.1"

@@ -2,16 +2,17 @@
 "use strict";
 import {RuleHelper} from "textlint-rule-helper";
 import {splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode} from "sentence-splitter";
-const StringSource = require("textlint-util-to-string");
-const {getTokenizer} = require("kuromojin");
+import {getTokenizer, KuromojiToken} from "kuromojin";
 import {
     is助詞Token, is読点Token,
     concatJoishiTokens,
     createKeyFromKey,
-    restoreToSurfaceFromKey, Token
+    restoreToSurfaceFromKey
 } from "./token-utils";
 import {TextlintRuleModule} from "@textlint/types";
 import {TxtNode} from "@textlint/types/lib/ast-node-types/src";
+
+const StringSource = require("textlint-util-to-string");
 
 /**
  * Create token map object
@@ -21,7 +22,7 @@ import {TxtNode} from "@textlint/types/lib/ast-node-types/src";
  * @param tokens
  * @returns {*}
  */
-function createSurfaceKeyMap(tokens: Token[]) {
+function createSurfaceKeyMap(tokens: KuromojiToken[]): { [index: string]: KuromojiToken[] } {
     // 助詞のみを対象とする
     return tokens.filter(is助詞Token).reduce((keyMap, token) => {
         // "は:助詞.係助詞" : [token]
@@ -31,10 +32,10 @@ function createSurfaceKeyMap(tokens: Token[]) {
         }
         keyMap[tokenKey].push(token);
         return keyMap;
-    }, {});
+    }, {} as { [index: string]: KuromojiToken[] });
 }
 
-function matchExceptionRule(tokens: Token[]) {
+function matchExceptionRule(tokens: KuromojiToken[]) {
     let token = tokens[0];
     // "の" の重なりは例外
     if (token.pos_detail_1 === "連体化") {
@@ -69,7 +70,7 @@ const defaultOptions = {
 
  TODO: need abstraction
  */
-module.exports = function (context, options = {}) {
+const report: TextlintRuleModule = function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;
@@ -116,7 +117,7 @@ module.exports = function (context, options = {}) {
                      }
                      */
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
-                        const tokens: Token[] = joshiTokenSurfaceKeyMap[key];
+                        const tokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
                         const joshiName = restoreToSurfaceFromKey(key);
                         // check allow
                         if (allow.indexOf(joshiName) >= 0) {
@@ -153,4 +154,5 @@ module.exports = function (context, options = {}) {
             });
         }
     }
-} as TextlintRuleModule;
+};
+export default report;

@@ -2311,10 +2311,10 @@ kuromoji@0.1.1:
     doublearray "0.0.2"
     zlibjs "^0.2.0"
 
-kuromojin@^1.2.1:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/kuromojin/-/kuromojin-1.4.0.tgz#2d955746736981e73d02dbfd20eeee8110cddab2"
-  integrity sha512-ZoG3NAW6ATKgo2jBgjVWwE66GeaT2jHgdf0v1dL8+WffuSfvTvX7l6ePgYusSAhHW+dwtneYcbav8N0NhsA0uw==
+kuromojin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/kuromojin/-/kuromojin-2.0.0.tgz#23e74a5ed2578432c9703ae75a69ba0a09ccb12d"
+  integrity sha512-60j/yLkFSc4t4roj8tI8ZNNSiAFnrkgXw8SqXz/9nakfs6mkCvPbrd7S8LDr4YNwEt1IyLys5JQTR9EnYyGHhA==
   dependencies:
     kuromoji "0.1.1"
 

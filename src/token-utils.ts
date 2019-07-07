@@ -1,15 +1,15 @@
 // LICENSE : MIT
 "use strict";
-export type Token = {
-    [index: string]: any;
-}
+
+import { KuromojiToken } from "kuromojin";
+
 // 助詞どうか
-export const is助詞Token = (token: Token) => {
+export const is助詞Token = (token: KuromojiToken) => {
     // 結合しているtokenは助詞助詞のようになってるため先頭一致で見る
     return token && /^助詞/.test(token.pos);
 };
 
-export const is読点Token = (token: Token) => {
+export const is読点Token = (token: KuromojiToken) => {
     return token.surface_form === "、" && token.pos === "名詞";
 };
 /**
@@ -18,7 +18,7 @@ export const is読点Token = (token: Token) => {
  * @param {Object} bToken
  * @returns {Object}
  */
-const concatToken = (aToken: Token, bToken: Token) => {
+const concatToken = (aToken: KuromojiToken, bToken: KuromojiToken) => {
     aToken.surface_form += bToken.surface_form;
     aToken.pos += bToken.pos;
     aToken.pos_detail_1 += bToken.surface_form;
@@ -29,8 +29,8 @@ const concatToken = (aToken: Token, bToken: Token) => {
  * @param {Array} tokens
  * @returns {Array}
  */
-export const concatJoishiTokens = (tokens: Token[]) => {
-    const newTokens: Token[] = [];
+export const concatJoishiTokens = (tokens: KuromojiToken[]) => {
+    const newTokens: KuromojiToken[] = [];
     tokens.forEach((token) => {
         const prevToken = newTokens[newTokens.length - 1];
         if (is助詞Token(token) && is助詞Token(prevToken)) {
@@ -44,7 +44,7 @@ export const concatJoishiTokens = (tokens: Token[]) => {
 // 助詞tokenから品詞細分類1までを元にしたkeyを作る
 // http://www.unixuser.org/~euske/doc/postag/index.html#chasen
 // http://chasen.naist.jp/snapshot/ipadic/ipadic/doc/ipadic-ja.pdf
-export const createKeyFromKey = (token: Token) => {
+export const createKeyFromKey = (token: KuromojiToken) => {
     // e.g.) "は:助詞.係助詞"
     return `${token.surface_form}:${token.pos}.${token.pos_detail_1}`;
 };
