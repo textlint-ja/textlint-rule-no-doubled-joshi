@@ -1,16 +1,16 @@
 // LICENSE : MIT
 "use strict";
-import {RuleHelper} from "textlint-rule-helper";
-import {splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode} from "sentence-splitter";
-import {getTokenizer, KuromojiToken} from "kuromojin";
+import { RuleHelper } from "textlint-rule-helper";
+import { splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode } from "sentence-splitter";
+import { getTokenizer, KuromojiToken } from "kuromojin";
 import {
     is助詞Token, is読点Token,
     concatJoishiTokens,
     createKeyFromKey,
     restoreToSurfaceFromKey
 } from "./token-utils";
-import {TextlintRuleModule} from "@textlint/types";
-import {TxtNode} from "@textlint/types/lib/ast-node-types/src";
+import { TextlintRuleModule, TextlintRuleOptions } from "@textlint/types";
+import { TxtNode } from "@textlint/types/lib/ast-node-types/src";
 
 const StringSource = require("textlint-util-to-string");
 
@@ -62,6 +62,13 @@ const defaultOptions = {
     separatorChars: ["。", "?", "!", "？", "！"]
 };
 
+
+export interface Options {
+    min_interval?: number;
+    strict?: boolean;
+    allow?: string[];
+    separatorChars?: string[]
+}
 /*
  1. Paragraph Node -> text
  2. text -> sentences
@@ -70,13 +77,13 @@ const defaultOptions = {
 
  TODO: need abstraction
  */
-const report: TextlintRuleModule = function (context, options = {}) {
+const report: TextlintRuleModule = function (context, options: TextlintRuleOptions<Options> = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
-    const {Syntax, report, RuleError} = context;
+    const { Syntax, report, RuleError } = context;
     return {
         [Syntax.Paragraph](node) {
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
