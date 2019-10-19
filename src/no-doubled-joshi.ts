@@ -9,8 +9,8 @@ import {
     createKeyFromKey,
     restoreToSurfaceFromKey
 } from "./token-utils";
-import { TextlintRuleModule, TextlintRuleOptions } from "@textlint/types";
 import { TxtNode } from "@textlint/ast-node-types";
+import { TextlintRuleModule } from "@textlint/types";
 import { StringSource } from "textlint-util-to-string";
 
 /**
@@ -77,7 +77,7 @@ export interface Options {
 
  TODO: need abstraction
  */
-const report: TextlintRuleModule = function (context, options: TextlintRuleOptions<Options> = {}) {
+const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;
