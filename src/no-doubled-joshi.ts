@@ -10,9 +10,8 @@ import {
     restoreToSurfaceFromKey
 } from "./token-utils";
 import { TextlintRuleModule, TextlintRuleOptions } from "@textlint/types";
-import { TxtNode } from "@textlint/types/lib/ast-node-types/src";
-
-const StringSource = require("textlint-util-to-string");
+import { TxtNode } from "@textlint/ast-node-types";
+import { StringSource } from "textlint-util-to-string";
 
 /**
  * Create token map object
@@ -69,6 +68,7 @@ export interface Options {
     allow?: string[];
     separatorChars?: string[]
 }
+
 /*
  1. Paragraph Node -> text
  2. text -> sentences
@@ -83,7 +83,7 @@ const report: TextlintRuleModule = function (context, options: TextlintRuleOptio
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
-    const { Syntax, report, RuleError } = context;
+    const {Syntax, report, RuleError} = context;
     return {
         [Syntax.Paragraph](node) {
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
