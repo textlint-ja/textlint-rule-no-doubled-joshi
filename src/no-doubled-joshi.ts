@@ -1,15 +1,17 @@
 // LICENSE : MIT
 "use strict";
-import {RuleHelper} from "textlint-rule-helper";
-import {getTokenizer} from "kuromojin";
-import {splitAST as splitSentences, Syntax as SentenceSyntax} from "sentence-splitter";
-import StringSource from "textlint-util-to-string";
+import { RuleHelper } from "textlint-rule-helper";
+import { splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode } from "sentence-splitter";
+import { getTokenizer, KuromojiToken } from "kuromojin";
 import {
     is助詞Token, is読点Token,
     concatJoishiTokens,
     createKeyFromKey,
     restoreToSurfaceFromKey
 } from "./token-utils";
+import { TxtNode } from "@textlint/ast-node-types";
+import { TextlintRuleModule } from "@textlint/types";
+import { StringSource } from "textlint-util-to-string";
 
 /**
  * Create token map object
@@ -19,7 +21,7 @@ import {
  * @param tokens
  * @returns {*}
  */
-function createSurfaceKeyMap(tokens) {
+function createSurfaceKeyMap(tokens: KuromojiToken[]): { [index: string]: KuromojiToken[] } {
     // 助詞のみを対象とする
     return tokens.filter(is助詞Token).reduce((keyMap, token) => {
         // "は:助詞.係助詞" : [token]
@@ -29,10 +31,10 @@ function createSurfaceKeyMap(tokens) {
         }
         keyMap[tokenKey].push(token);
         return keyMap;
-    }, {});
+    }, {} as { [index: string]: KuromojiToken[] });
 }
 
-function matchExceptionRule(tokens) {
+function matchExceptionRule(tokens: KuromojiToken[]) {
     let token = tokens[0];
     // "の" の重なりは例外
     if (token.pos_detail_1 === "連体化") {
@@ -59,6 +61,14 @@ const defaultOptions = {
     separatorChars: ["。", "?", "!", "？", "！"]
 };
 
+
+export interface Options {
+    min_interval?: number;
+    strict?: boolean;
+    allow?: string[];
+    separatorChars?: string[]
+}
+
 /*
  1. Paragraph Node -> text
  2. text -> sentences
@@ -67,26 +77,25 @@ const defaultOptions = {
 
  TODO: need abstraction
  */
-module.exports = function (context, options = {}) {
+const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
-    const separatorChars = options.separatorChars || defaultOptions.separatorChars;
     const {Syntax, report, RuleError} = context;
     return {
         [Syntax.Paragraph](node) {
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
                 return;
             }
-            const isSentenceNode = node => {
+            const isSentenceNode = (node: TxtNode): node is SentenceNode => {
                 return node.type === SentenceSyntax.Sentence;
             };
             const txtParentNode = splitSentences(node);
             const sentences = txtParentNode.children.filter(isSentenceNode);
-            return getTokenizer().then(tokenizer => {
-                const checkSentence = (sentence) => {
+            return getTokenizer().then((tokenizer: any) => {
+                const checkSentence = (sentence: SentenceNode) => {
                     const sentenceSource = new StringSource(sentence);
                     const text = sentenceSource.toString();
                     const tokens = tokenizer.tokenizeForSentence(text);
@@ -115,7 +124,7 @@ module.exports = function (context, options = {}) {
                      }
                      */
                     Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
-                        const tokens = joshiTokenSurfaceKeyMap[key];
+                        const tokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
                         const joshiName = restoreToSurfaceFromKey(key);
                         // check allow
                         if (allow.indexOf(joshiName) >= 0) {
@@ -148,8 +157,9 @@ module.exports = function (context, options = {}) {
                         });
                     });
                 };
-                sentences.forEach(checkSentence);
+                sentences.forEach(node => checkSentence(node))
             });
         }
     }
 };
+export default report;
