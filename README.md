@@ -13,13 +13,6 @@
 
     npm install textlint-rule-no-doubled-joshi
 
-Require: textlint 5.0 >=
-
-Dependencies
-
-- [azu/kuromojin](https://github.com/azu/kuromojin) a wrapper of [kuromoji.js](https://github.com/takuyaa/kuromoji.js "kuromoji.js")
-- [azu/sentence-splitter](https://github.com/azu/sentence-splitter)
-
 ## Usage
 
 Via `.textlintrc`(推奨)
@@ -43,11 +36,11 @@ textlint --rule no-doubled-joshi README.md
 
 `.textlintrc` options.
 
-```js
+```json5
 {
     "rules": {
         "no-doubled-joshi": {
-            // 助詞のtoken同士の距離が2以下ならエラー
+            // 助詞のtoken同士の距離が2以下ならエラーにする
             "min_interval" : 2,
             // 例外を許可するかどうか
             "strict": false,
@@ -57,7 +50,7 @@ textlint --rule no-doubled-joshi README.md
             "separatorChars": [
                 ".", // period
                 "．", // (ja) 全角period
-                "。", // (ja) 読点
+                "。", // (ja) 句点
                 "?", // question mark
                 "!", //  exclamation mark
                 "？", // (ja) 全角 question mark
@@ -68,14 +61,16 @@ textlint --rule no-doubled-joshi README.md
 }
 ```
 
-- `min_interval`(default: 1) : 助詞の最低間隔値
-    - 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます。
-- `strict`(default: false) : 例外もエラーとするかどうか
+- `min_interval`(default: `1`) : 助詞の最低間隔値
+    - 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます
+- `strict`(default: `false`) : 例外もエラーとするかどうか
     - 下記参照。例外としているものもエラーとするかどうか
-- `allow`(default: []) :複数回の出現を許す助詞
-    - 並立の助詞など、複数回出現しても無視する助詞を指定します。
+- `allow`(default: `[]`) :複数回の出現を許す助詞
+    - 並立の助詞など、複数回出現しても無視する助詞を指定します
+    - 例) `"も"`を許可したい場合は `{ "allow": ["も"] }`
 - `separatorChars`(default: `[".", "．", "。", "?", "!", "？", "！"]`) : 文の区切り文字として使用する文字の配列
-    - `。`のみを文の区切り文字にしたい場合は。`["。"]`のように指定します。
+    - `separatorChars`を設定するとデフォルト値は上書きされます
+    - `。`のみを文の区切り文字にしたい場合は。`{ "separatorChars" : ["。"] }`のように指定します
 
 **min_interval**について
 
@@ -180,6 +175,11 @@ NG: 文字列**には**そこ**には***問題がある。
 - [助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに](http://popoon.hatenablog.com/entry/2014/07/11/232057 "助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに")
 - [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
 - [形態素解析ツールの品詞体系](http://www.unixuser.org/~euske/doc/postag/index.html#chasen "形態素解析ツールの品詞体系")
+
+## Related Libraries
+
+- [azu/kuromojin](https://github.com/azu/kuromojin) a wrapper of [kuromoji.js](https://github.com/takuyaa/kuromoji.js "kuromoji.js")
+- [azu/sentence-splitter](https://github.com/azu/sentence-splitter)
 
 ## Contributing
 
