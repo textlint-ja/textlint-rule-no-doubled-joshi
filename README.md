@@ -46,7 +46,7 @@ textlint --rule no-doubled-joshi README.md
             "strict": false,
             // 助詞のうち「も」「や」は複数回の出現を許す
             "allow": ["も","や"],
-            // 文区切り文字の配列
+            // 文の区切り文字となる配列
             "separatorCharacters": [
                 ".", // period
                 "．", // (ja) 全角period
