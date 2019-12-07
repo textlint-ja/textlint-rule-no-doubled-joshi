@@ -63,8 +63,9 @@ textlint --rule no-doubled-joshi README.md
 {
     "rules": {
         "no-doubled-joshi": {
-            // 助詞のtoken同士の距離が2以下ならエラーにする
-            "min_interval" : 2,
+            // 助詞のtoken同士の間隔値が1以下ならエラーにする
+            // 間隔値は1から開始されます
+            "min_interval" : 1,
             // 例外を許可するかどうか
             "strict": false,
             // 助詞のうち「も」「や」は複数回の出現を許す

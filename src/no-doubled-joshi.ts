@@ -111,7 +111,10 @@ export interface Options {
 const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
-    const minInterval = options.min_interval || defaultOptions.min_interval;
+    const minInterval = options.min_interval !== undefined ? options.min_interval : defaultOptions.min_interval;
+    if (minInterval <= 0) {
+        throw new Error("options.min_intervalは1以上の数値を指定してください");
+    }
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
     const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
