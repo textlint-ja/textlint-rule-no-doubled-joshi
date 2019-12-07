@@ -58,7 +58,15 @@ const defaultOptions = {
     min_interval: 1,
     strict: false,
     allow: [],
-    separatorChars: ["。", "?", "!", "？", "！"]
+    separatorCharacters: [
+        ".", // period
+        "．", // (ja) zenkaku-period
+        "。", // (ja) 句点
+        "?", // question mark
+        "!", //  exclamation mark
+        "？", // (ja) zenkaku question mark
+        "！" // (ja) zenkaku exclamation mark
+    ]
 };
 
 
@@ -83,6 +91,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
+    const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
     const {Syntax, report, RuleError} = context;
     return {
         [Syntax.Paragraph](node) {
@@ -92,7 +101,11 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
             const isSentenceNode = (node: TxtNode): node is SentenceNode => {
                 return node.type === SentenceSyntax.Sentence;
             };
-            const txtParentNode = splitSentences(node);
+            const txtParentNode = splitSentences(node, {
+                SeparatorParser: {
+                    separatorCharacters
+                }
+            });
             const sentences = txtParentNode.children.filter(isSentenceNode);
             return getTokenizer().then((tokenizer: any) => {
                 const checkSentence = (sentence: SentenceNode) => {
