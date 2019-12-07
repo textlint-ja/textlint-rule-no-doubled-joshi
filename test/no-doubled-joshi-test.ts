@@ -24,7 +24,14 @@ tester.run("no-double-joshi", rule, {
         {
             text: "太字も強調も同じように無視されます。",
             options: {allow: ["も"]}
+        },
+        // 区切り文字をカスタムする
+        // ♪を区切り文字としたので、次の文は2つのセンテンスになる
+        {
+            text: "これはペンです♪これは鉛筆です♪",
+            options: {separatorChars: ["♪"]},
         }
+
     ],
     invalid: [
         // エラー位置は最後の助詞の位置を表示する
