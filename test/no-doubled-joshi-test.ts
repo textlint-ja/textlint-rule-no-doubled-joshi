@@ -29,7 +29,7 @@ tester.run("no-double-joshi", rule, {
         // ♪を区切り文字としたので、次の文は2つのセンテンスになる
         {
             text: "これはペンです♪これは鉛筆です♪",
-            options: {separatorChars: ["♪"]},
+            options: {separatorCharacters: ["♪"]},
         }
 
     ],
@@ -197,7 +197,7 @@ tester.run("no-double-joshi", rule, {
         // 次のtextは1つのセンテンスとして認識されるので、"は"が重複する
         {
             text: "これはペンです．これは鉛筆です．",
-            options: {separatorChars: ["。"]},
+            options: {separatorCharacters: ["。"]},
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,

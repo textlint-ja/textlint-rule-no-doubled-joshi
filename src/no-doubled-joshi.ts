@@ -58,7 +58,7 @@ const defaultOptions = {
     min_interval: 1,
     strict: false,
     allow: [],
-    separatorChars: [
+    separatorCharacters: [
         ".", // period
         "．", // (ja) zenkaku-period
         "。", // (ja) 句点
@@ -91,7 +91,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const minInterval = options.min_interval || defaultOptions.min_interval;
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
-    const separatorChars = options.separatorChars || defaultOptions.separatorChars;
+    const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
     const {Syntax, report, RuleError} = context;
     return {
         [Syntax.Paragraph](node) {
@@ -103,7 +103,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
             };
             const txtParentNode = splitSentences(node, {
                 SeparatorParser: {
-                    separatorCharacters: separatorChars
+                    separatorCharacters
                 }
             });
             const sentences = txtParentNode.children.filter(isSentenceNode);

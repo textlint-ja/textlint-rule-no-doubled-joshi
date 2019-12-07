@@ -47,7 +47,7 @@ textlint --rule no-doubled-joshi README.md
             // 助詞のうち「も」「や」は複数回の出現を許す
             "allow": ["も","や"],
             // 文区切り文字の配列
-            "separatorChars": [
+            "separatorCharacters": [
                 ".", // period
                 "．", // (ja) 全角period
                 "。", // (ja) 句点
@@ -68,9 +68,9 @@ textlint --rule no-doubled-joshi README.md
 - `allow`(default: `[]`) :複数回の出現を許す助詞
     - 並立の助詞など、複数回出現しても無視する助詞を指定します
     - 例) `"も"`を許可したい場合は `{ "allow": ["も"] }`
-- `separatorChars`(default: `[".", "．", "。", "?", "!", "？", "！"]`) : 文の区切り文字として使用する文字の配列
-    - `separatorChars`を設定するとデフォルト値は上書きされます
-    - `。`のみを文の区切り文字にしたい場合は。`{ "separatorChars" : ["。"] }`のように指定します
+- `separatorCharacters`(default: `[".", "．", "。", "?", "!", "？", "！"]`) : 文の区切り文字として使用する文字の配列
+    - `separatorCharacters`を設定するとデフォルト値は上書きされます
+    - `。`のみを文の区切り文字にしたい場合は。`{ "separatorCharacters" : ["。"] }`のように指定します
 
 **min_interval**について
 
