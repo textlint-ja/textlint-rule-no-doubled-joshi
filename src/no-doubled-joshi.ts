@@ -61,7 +61,7 @@ const defaultOptions = {
     separatorChars: [
         ".", // period
         "．", // (ja) zenkaku-period
-        "。", // (ja) dokuten
+        "。", // (ja) 句点
         "?", // question mark
         "!", //  exclamation mark
         "？", // (ja) zenkaku question mark
