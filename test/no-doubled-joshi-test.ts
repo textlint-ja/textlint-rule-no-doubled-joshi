@@ -24,11 +24,6 @@ tester.run("no-double-joshi", rule, {
         {
             text: "太字も強調も同じように無視されます。",
             options: {allow: ["も"]}
-        },
-        // 全角ピリオドを文区切り文字に含める
-        {
-            text: "画面に表示されます．それ以外には表示されません．",
-            options: {separatorChars: ["。","．","?","!","？","！"]}
         }
     ],
     invalid: [
@@ -150,7 +145,7 @@ tester.run("no-double-joshi", rule, {
                     column: 6
                 }
             ]
-        },{
+        }, {
             text: `この行にはtextlintによる警告は出ない。
 この行にはtextlintにより警告が発せられる。この行に何かしようとすると起きるという
 この行にはtextlintによる警告は出ない。
@@ -188,6 +183,18 @@ tester.run("no-double-joshi", rule, {
                 {
                     message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
                     index: 21
+                }
+            ]
+        },
+        // オプションで、全角ピリオドを読点として認識させなくする
+        // 次のtextは1つのセンテンスとして認識されるので、"は"が重複する
+        {
+            text: "これはペンです．これは鉛筆です．",
+            options: {separatorChars: ["。"]},
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
+                    index: 10
                 }
             ]
         }

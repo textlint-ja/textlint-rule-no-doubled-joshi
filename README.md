@@ -24,14 +24,10 @@ Dependencies
 
 Via `.textlintrc`(推奨)
 
-```js
+```json5
 {
     "rules": {
-        "no-doubled-joshi": {
-            "min_interval" : 1,
-            "strict": false,
-            "allow": []
-        }
+        "no-doubled-joshi": true
     }
 }
 ```
@@ -56,7 +52,17 @@ textlint --rule no-doubled-joshi README.md
             // 例外を許可するかどうか
             "strict": false,
             // 助詞のうち「も」「や」は複数回の出現を許す
-            "allow": ["も","や"]
+            "allow": ["も","や"],
+            // 文区切り文字の配列
+            "separatorChars": [
+                ".", // period
+                "．", // (ja) 全角period
+                "。", // (ja) 読点
+                "?", // question mark
+                "!", //  exclamation mark
+                "？", // (ja) 全角 question mark
+                "！" // (ja) 全角 exclamation mark
+            ]
         }
     }
 }
@@ -64,10 +70,14 @@ textlint --rule no-doubled-joshi README.md
 
 - `min_interval`(default: 1) : 助詞の最低間隔値
     - 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます。
-- `strict`(default: false) :例外もエラーとするかどうか
+- `strict`(default: false) : 例外もエラーとするかどうか
     - 下記参照。例外としているものもエラーとするかどうか
 - `allow`(default: []) :複数回の出現を許す助詞
     - 並立の助詞など、複数回出現しても無視する助詞を指定します。
+- `separatorChars`(default: `[".", "．", "。", "?", "!", "？", "！"]`) : 文の区切り文字として使用する文字の配列
+    - `。`のみを文の区切り文字にしたい場合は。`["。"]`のように指定します。
+
+**min_interval**について
 
 > 私**は**彼**は**好き
 
