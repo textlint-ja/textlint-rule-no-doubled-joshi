@@ -121,22 +121,22 @@ textlint --rule no-doubled-joshi README.md
 > これはペンです。これは鉛筆です。
 
 この文は句点(`。`)によって2つの文として認識されます。
-そのため、それぞれの文では助詞`は`は1度のみとなるためエラーとはなりません。
+そのため、それぞれの文中での助詞`は`は1度のみの出現となりエラーとはなりません。
 
-句点は `separatorCharacters` オプションで指定できます。
+句点もじは `separatorCharacters` オプションで指定できます。
 
 このルールが助詞として認識するものは、次のサイトで確認できます。
 
 - [kuromoji.js demo](https://takuyaa.github.io/kuromoji.js/demo/tokenize.html "kuromoji.js demo")
 
-### 句点での区切り
+### 読点での区切り
 
 > これがiPhone、これがAndroidです。
 
-句点文字が助詞の間にある場合、間隔値は+1されます。
+読点文字（`、`）が助詞の間にある場合、間隔値は+1されます。
 そのため、助詞`が`の間隔値は`2`となりデフォルトではエラーとなりません。
 
-句点文字は `commaCharacters` オプションで指定できます。
+読点文字は `commaCharacters` オプションで指定できます。
 
 ## 例外
 
