@@ -8,8 +8,9 @@ tester.run("no-double-joshi", rule, {
         "既存のコードの利用", // "の" の例外
         "オブジェクトを返す関数を公開した", // "を" の例外
         "私は彼の鼻は好きだ",
-        // 、 tokenを距離 + 1 として考える
-        "右がiPhone、左がAndroidです。",
+        // 、 と ，をtokenを距離 + 1 として考える
+        "これがiPhone、これがAndroidです。",
+        "これがiPhone，これがAndroidです。",
         "ナイフで切断した後、ハンマーで破砕した。",
         // 接続助詞のてが重複は許容
         "まずは試していただいて",
@@ -30,8 +31,12 @@ tester.run("no-double-joshi", rule, {
         {
             text: "これはペンです♪これは鉛筆です♪",
             options: {separatorCharacters: ["♪"]},
+        },
+        // ,を読点とみなす
+        {
+            text: "これがiPhone,これがAndroidです。",
+            options: {commaCharacters: [","]},
         }
-
     ],
     invalid: [
         // エラー位置は最後の助詞の位置を表示する
@@ -202,6 +207,18 @@ tester.run("no-double-joshi", rule, {
                 {
                     message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
                     index: 10
+                }
+            ]
+        },
+        // 、を読点と認識させなくする
+        {
+            text: "これがiPhone、これがAndroidです。",
+            options: {commaCharacters: []},
+            errors: [
+                {
+
+                    message: `一文に二回以上利用されている助詞 "が" がみつかりました。`,
+                    index: 12
                 }
             ]
         }

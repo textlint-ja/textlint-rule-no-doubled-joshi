@@ -9,8 +9,20 @@ export const is助詞Token = (token: KuromojiToken) => {
     return token && /^助詞/.test(token.pos);
 };
 
-export const is読点Token = (token: KuromojiToken) => {
-    return token.surface_form === "、" && token.pos === "名詞";
+/**
+ * 読点を判定する関数を返す
+ * 注意: 名詞や記号ではないトークンは読点として扱えない
+ * @param commaCharacters
+ */
+export const create読点Matcher = (commaCharacters: string[]) => {
+    return function is読点Token(token: KuromojiToken) {
+        return commaCharacters.includes(token.surface_form) && (
+            // 、や, は名詞扱い
+            token.pos === "名詞" ||
+            // ，は記号 && 読点となる(surface_formを優先するために pos_detail_1/読点 のチェックを省く)
+            token.pos === "記号"
+        );
+    }
 };
 /**
  * aTokenの_extraKeyに結合したkeyを追加する

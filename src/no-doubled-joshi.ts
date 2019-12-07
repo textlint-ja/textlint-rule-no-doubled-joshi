@@ -4,7 +4,8 @@ import { RuleHelper } from "textlint-rule-helper";
 import { splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode } from "sentence-splitter";
 import { getTokenizer, KuromojiToken } from "kuromojin";
 import {
-    is助詞Token, is読点Token,
+    is助詞Token,
+    create読点Matcher,
     concatJoishiTokens,
     createKeyFromKey,
     restoreToSurfaceFromKey
@@ -66,15 +67,37 @@ const defaultOptions = {
         "!", //  exclamation mark
         "？", // (ja) zenkaku question mark
         "！" // (ja) zenkaku exclamation mark
+    ],
+    commaCharacters: [
+        "、",
+        "，" // 全角カンマ
     ]
 };
 
-
 export interface Options {
+    /**
+     * 助詞の最低間隔値
+     * 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます
+     */
     min_interval?: number;
+    /**
+     * デフォルトの例外パターンもエラーにするかどうか
+     * デフォルト: false
+     */
     strict?: boolean;
+    /**
+     * 複数回の出現を許す助詞の配列
+     * 例): ["も", "や"]
+     */
     allow?: string[];
-    separatorChars?: string[]
+    /**
+     * 文の区切りとなる文字(句点)の配列
+     */
+    separatorCharacters?: string[];
+    /**
+     * 読点となる文字の配列
+     */
+    commaCharacters?: string[];
 }
 
 /*
@@ -92,7 +115,9 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const isStrict = options.strict || defaultOptions.strict;
     const allow = options.allow || defaultOptions.allow;
     const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
+    const commaCharacters = options.commaCharacters || defaultOptions.commaCharacters;
     const {Syntax, report, RuleError} = context;
+    const is読点Token = create読点Matcher(commaCharacters);
     return {
         [Syntax.Paragraph](node) {
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {

@@ -1,12 +1,35 @@
 # textlint-rule-no-doubled-joshi [![Build Status](https://travis-ci.org/textlint-ja/textlint-rule-no-doubled-joshi.svg?branch=master)](https://travis-ci.org/textlint-ja/textlint-rule-no-doubled-joshi)
 
-文中に同じ助詞が複数出てくるのをチェックする[textlint](https://github.com/textlint/textlint "textlint")ルールです。
+1つの文中に同じ助詞が連続して出てくるのをチェックする[textlint](https://github.com/textlint/textlint)ルールです。
 
-例)
+文中で同じ助詞が連続すると文章が読みにくくなります。
+
+例) **で**という助詞が連続している
 
 > 材料不足で代替素材で製品を作った。
 
-**で** という助詞が一文で複数回でてきているのをチェックすることができます。
+**で** という助詞が1つの文中に連続して書かれているのをチェックすることができます。
+
+**OK**:
+
+```
+私は彼が好きだ
+オブジェクトを返す関数を公開した
+これがiPhone、これがAndroidです。
+これがiPhone，これがAndroidです。
+言うのは簡単の法則。
+```
+
+**NG**:
+
+```
+私は彼は好きだ
+材料不足で代替素材で製品を作った。
+列車事故でバスで振り替え輸送を行った。
+法律案は十三日の衆議院本会議で賛成多数で可決され、参議院に送付されます
+これは`obj.method`は何をしているかを示します。
+これとあれとそれを持ってきて。
+```
 
 
 ## Installation
@@ -55,48 +78,65 @@ textlint --rule no-doubled-joshi README.md
                 "!", //  exclamation mark
                 "？", // (ja) 全角 question mark
                 "！" // (ja) 全角 exclamation mark
+            ],
+            "commaCharacters": [
+                "、",
+                "，" // 全角カンマ
             ]
         }
     }
 }
 ```
 
-- `min_interval`(default: `1`) : 助詞の最低間隔値
+- `min_interval`:  助詞の最低間隔値
+    - Default: `1`
+    - 指定した`min_interval`以内にある同じ助詞は連続しているとみなされます
     - 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます
-- `strict`(default: `false`) : 例外もエラーとするかどうか
+- `strict`: 厳しくチェックするかどうか
+    - Default: `false`
     - 下記参照。例外としているものもエラーとするかどうか
-- `allow`(default: `[]`) :複数回の出現を許す助詞
+    - false-positiveが発生しやすくなります
+- `allow`: 複数回の出現を許す助詞
+    - Default: `[]`
     - 並立の助詞など、複数回出現しても無視する助詞を指定します
     - 例) `"も"`を許可したい場合は `{ "allow": ["も"] }`
-- `separatorCharacters`(default: `[".", "．", "。", "?", "!", "？", "！"]`) : 文の区切り文字として使用する文字の配列
+- `separatorCharacters`: 文の区切り文字の配列
+    - Default: `[".", "．", "。", "?", "!", "？", "！"]`
     - `separatorCharacters`を設定するとデフォルト値は上書きされます
     - `。`のみを文の区切り文字にしたい場合は。`{ "separatorCharacters" : ["。"] }`のように指定します
-
-**min_interval**について
-
-> 私**は**彼**は**好き
-
-この場合の、**は**と**は**の間隔値は1
-
-> 既存**の**文と絵**の**修正
-
-この場合の、**の**と**の**の間隔値は2(**の**の間に**と**がある)
+- `commaCharacters`: 句点となる文字の配列
+    - Default: `["、", "，"]`
+    - 読点として認識する文字の配列を指定します
+    - 読点は間隔値を+1する効果があります
 
 ## 判定処理
 
-ある助詞(かつ品詞細分類)が一致するものが、一定最低間隔値(距離)以下に書かれている場合を検出する。
+ある助詞(かつ品詞細分類)が、最低間隔値(距離)以内に連続して書かれている場合をエラーとして検出します
 
-[元ネタ](https://github.com/redpen-cc/redpen/issues/460 "Doubled Joshi Validator · Issue #460 · redpen-cc/redpen")は助詞が1文(センテンス)に2回以上でてきた際にエラーとしてる。
+> 材料不足で代替素材で製品を作った。
 
-少し厳しすぎると感じたので、1文(センテンス)ではなく最低間隔値(距離)という概念を導入した
+この文中の助詞 `で` 同士の間隔値 は `1` となります。
+デフォルトの最低間隔値(`min_interval`)は`1`となるなるため、このケースはエラーとして判定されます。
 
-> この書籍はJavaScriptのライブラリやツールにおけるプラグインアーキテクチャを見ていく事を目的としたものです
+> これはペンです。これは鉛筆です。
 
-この場合 "を" が最低間隔値2で並んでいるため、デフォルト設定ではエラーとしている。
+この文は句点(`。`)によって2つの文として認識されます。
+そのため、それぞれの文では助詞`は`は1度のみとなるためエラーとはなりません。
 
-助詞にはどのようなものがあるかは次のサイトで確認できます。
+句点は `separatorCharacters` オプションで指定できます。
 
-- [kuromoji.js demo](http://takuyaa.github.io/kuromoji.js/demo/tokenize.html "kuromoji.js demo")
+このルールが助詞として認識するものは、次のサイトで確認できます。
+
+- [kuromoji.js demo](https://takuyaa.github.io/kuromoji.js/demo/tokenize.html "kuromoji.js demo")
+
+### 句点での区切り
+
+> これがiPhone、これがAndroidです。
+
+句点文字が助詞の間にある場合、間隔値は+1されます。
+そのため、助詞`が`の間隔値は`2`となりデフォルトではエラーとなりません。
+
+句点文字は `commaCharacters` オプションで指定できます。
 
 ## 例外
 
@@ -156,12 +196,6 @@ NG: 文字列**には**そこ**には***問題がある。
 }
 ```
 
-### "、"での区切り
-
-> 右がiPhone、左がAndroidです。
-
-"、"を間隔値+1としてカウントするため、上記の文章はデフォルトでは許容される。
-
 ## Tests
 
     npm test
@@ -175,6 +209,7 @@ NG: 文字列**には**そこ**には***問題がある。
 - [助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに](http://popoon.hatenablog.com/entry/2014/07/11/232057 "助詞の連続使用を避け分かりやすい文章を書こう！ - 有限な時間の果てに")
 - [作文入門](http://www.slideshare.net/takahi-i/ss-13429892 "作文入門")
 - [形態素解析ツールの品詞体系](http://www.unixuser.org/~euske/doc/postag/index.html#chasen "形態素解析ツールの品詞体系")
+- [Redpenの実装](https://github.com/redpen-cc/redpen/issues/460 "Doubled Joshi Validator · Issue #460 · redpen-cc/redpen")
 
 ## Related Libraries
 
