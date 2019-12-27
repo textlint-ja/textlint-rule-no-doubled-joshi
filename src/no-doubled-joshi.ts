@@ -49,6 +49,11 @@ function matchExceptionRule(tokens: KuromojiToken[]) {
     if (token.pos_detail_1 === "接続助詞" && token.surface_form === "て") {
         return true;
     }
+    // 並立助詞は例外
+    // 登ったり降りたり
+    if(tokens.length === 2 && tokens[0].pos_detail_1 === "並立助詞" && tokens[1].pos_detail_1 === "並立助詞"){
+        return true;
+    }
     return false;
 }
 
