@@ -16,13 +16,14 @@ export const is助詞Token = (token: KuromojiToken) => {
  */
 export const create読点Matcher = (commaCharacters: string[]) => {
     return function is読点Token(token: KuromojiToken) {
-        return commaCharacters.includes(token.surface_form) && (
+        return (
+            commaCharacters.includes(token.surface_form) &&
             // 、や, は名詞扱い
-            token.pos === "名詞" ||
-            // ，は記号 && 読点となる(surface_formを優先するために pos_detail_1/読点 のチェックを省く)
-            token.pos === "記号"
+            (token.pos === "名詞" ||
+                // ，は記号 && 読点となる(surface_formを優先するために pos_detail_1/読点 のチェックを省く)
+                token.pos === "記号")
         );
-    }
+    };
 };
 /**
  * aTokenの_extraKeyに結合したkeyを追加する
@@ -43,7 +44,7 @@ const concatToken = (aToken: KuromojiToken, bToken: KuromojiToken) => {
  */
 export const concatJoishiTokens = (tokens: KuromojiToken[]) => {
     const newTokens: KuromojiToken[] = [];
-    tokens.forEach((token) => {
+    tokens.forEach(token => {
         const prevToken = newTokens[newTokens.length - 1];
         if (is助詞Token(token) && is助詞Token(prevToken)) {
             newTokens[newTokens.length - 1] = concatToken(prevToken, token);

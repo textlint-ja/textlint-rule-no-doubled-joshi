@@ -27,18 +27,18 @@ tester.run("no-double-joshi", rule, {
         // "プロパティを削除しようとするとエラーが発生します。",
         {
             text: "太字も強調も同じように無視されます。",
-            options: {allow: ["も"]}
+            options: { allow: ["も"] }
         },
         // 区切り文字をカスタムする
         // ♪を区切り文字としたので、次の文は2つのセンテンスになる
         {
             text: "これはペンです♪これは鉛筆です♪",
-            options: {separatorCharacters: ["♪"]},
+            options: { separatorCharacters: ["♪"] }
         },
         // ,を読点とみなす
         {
             text: "これがiPhone,これがAndroidです。",
-            options: {commaCharacters: [","]},
+            options: { commaCharacters: [","] }
         }
     ],
     invalid: [
@@ -77,7 +77,7 @@ tester.run("no-double-joshi", rule, {
         {
             text: "洋服をドラム式洗濯機でお湯と洗剤で洗い、乾燥機で素早く乾燥させる。",
             options: {
-                "min_interval": 2
+                min_interval: 2
             },
             errors: [
                 {
@@ -119,7 +119,7 @@ tester.run("no-double-joshi", rule, {
         {
             text: "白装束で重力のない足どりでやってくる",
             options: {
-                "min_interval": 2
+                min_interval: 2
             },
             errors: [
                 {
@@ -151,7 +151,8 @@ tester.run("no-double-joshi", rule, {
                     column: 16
                 }
             ]
-        }, {
+        },
+        {
             text: "これとあれとそれを持ってきて。",
             errors: [
                 {
@@ -160,7 +161,8 @@ tester.run("no-double-joshi", rule, {
                     column: 6
                 }
             ]
-        }, {
+        },
+        {
             text: `この行にはtextlintによる警告は出ない。
 この行にはtextlintにより警告が発せられる。この行に何かしようとすると起きるという
 この行にはtextlintによる警告は出ない。
@@ -205,7 +207,7 @@ tester.run("no-double-joshi", rule, {
         // 次のtextは1つのセンテンスとして認識されるので、"は"が重複する
         {
             text: "これはペンです．これは鉛筆です．",
-            options: {separatorCharacters: ["。"]},
+            options: { separatorCharacters: ["。"] },
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
@@ -216,10 +218,9 @@ tester.run("no-double-joshi", rule, {
         // 、を読点と認識させなくする
         {
             text: "これがiPhone、これがAndroidです。",
-            options: {commaCharacters: []},
+            options: { commaCharacters: [] },
             errors: [
                 {
-
                     message: `一文に二回以上利用されている助詞 "が" がみつかりました。`,
                     index: 12
                 }

@@ -36,7 +36,7 @@ function createSurfaceKeyMap(tokens: KuromojiToken[]): { [index: string]: Kuromo
 }
 
 function matchExceptionRule(tokens: KuromojiToken[]) {
-    let token = tokens[0];
+    const token = tokens[0];
     // "の" の重なりは例外
     if (token.pos_detail_1 === "連体化") {
         return true;
@@ -51,7 +51,7 @@ function matchExceptionRule(tokens: KuromojiToken[]) {
     }
     // 並立助詞は例外
     // 登ったり降りたり
-    if(tokens.length === 2 && tokens[0].pos_detail_1 === "並立助詞" && tokens[1].pos_detail_1 === "並立助詞"){
+    if (tokens.length === 2 && tokens[0].pos_detail_1 === "並立助詞" && tokens[1].pos_detail_1 === "並立助詞") {
         return true;
     }
     return false;
@@ -113,7 +113,7 @@ export interface Options {
 
  TODO: need abstraction
  */
-const report: TextlintRuleModule<Options> = function (context, options = {}) {
+const report: TextlintRuleModule<Options> = function(context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval !== undefined ? options.min_interval : defaultOptions.min_interval;
@@ -124,7 +124,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const allow = options.allow || defaultOptions.allow;
     const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
     const commaCharacters = options.commaCharacters || defaultOptions.commaCharacters;
-    const {Syntax, report, RuleError} = context;
+    const { Syntax, report, RuleError } = context;
     const is読点Token = create読点Matcher(commaCharacters);
     return {
         [Syntax.Paragraph](node) {
@@ -183,7 +183,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             }
                         }
                         if (tokens.length <= 1) {
-                            return;// no duplicated token
+                            return; // no duplicated token
                         }
                         // if found differenceIndex less than
                         // tokes are sorted ascending order
@@ -195,17 +195,23 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             if (differenceIndex <= minInterval) {
                                 // padding positionを計算する
                                 const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
-                                report(sentence, new RuleError(`一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`, {
-                                    index: originalIndex
-                                }));
+                                report(
+                                    sentence,
+                                    new RuleError(
+                                        `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`,
+                                        {
+                                            index: originalIndex
+                                        }
+                                    )
+                                );
                             }
                             return current;
                         });
                     });
                 };
-                sentences.forEach(node => checkSentence(node))
+                sentences.forEach(node => checkSentence(node));
             });
         }
-    }
+    };
 };
 export default report;

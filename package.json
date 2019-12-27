@@ -25,7 +25,8 @@
     "build": "textlint-scripts build",
     "watch": "textlint-scripts build --watch",
     "prepublish": "npm run --if-present build",
-    "test": "textlint-scripts test"
+    "test": "textlint-scripts test",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,css}\""
   },
   "keywords": [
     "rule",
@@ -35,6 +36,9 @@
   "devDependencies": {
     "@textlint/types": "^1.2.3",
     "@types/node": "^12.12.14",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1",
     "textlint-scripts": "^3.0.0",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.3"
@@ -44,5 +48,21 @@
     "sentence-splitter": "^3.2.0",
     "textlint-rule-helper": "^2.1.1",
     "textlint-util-to-string": "^3.0.0"
+  },
+  "prettier": {
+    "singleQuote": false,
+    "printWidth": 120,
+    "tabWidth": 4
+  },
+  "husky": {
+    "hooks": {
+      "precommit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,css}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
