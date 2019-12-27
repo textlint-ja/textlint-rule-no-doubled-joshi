@@ -58,8 +58,11 @@ export const concatJoishiTokens = (tokens: KuromojiToken[]) => {
 // http://www.unixuser.org/~euske/doc/postag/index.html#chasen
 // http://chasen.naist.jp/snapshot/ipadic/ipadic/doc/ipadic-ja.pdf
 export const createKeyFromKey = (token: KuromojiToken) => {
-    // e.g.) "は:助詞.係助詞"
-    return `${token.surface_form}:${token.pos}.${token.pos_detail_1}`;
+    // e.g.) "は:助詞.係助詞.*.*"
+    // "しようとすると" と には次の違いある
+    // と	助詞	格助詞	一般 *
+    // と	助詞	接続助詞	*	*
+    return `${token.surface_form}:${token.pos}.${token.pos_detail_1}.${token.pos_detail_2}.${token.pos_detail_3}`;
 };
 // keyからsurfaceを取り出す
 export const restoreToSurfaceFromKey = (key: string) => {

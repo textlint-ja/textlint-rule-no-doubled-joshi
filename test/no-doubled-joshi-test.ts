@@ -18,7 +18,17 @@ tester.run("no-double-joshi", rule, {
         "そのため、文字列の長さを正確に測るにはある程度の妥協が必要になります。",
         "そんな事で言うべきではない。",
         "言うのは簡単の法則。",
+        // 品詞細分類2の一致を見ている
+        // "しようとすると" と には次の違いある
+        // と	助詞	格助詞	一般 *
+        // と	助詞	接続助詞	*	*
+        "削除しようとすると問題が発生する",
+        // kuromojiだと品詞細分類2が次の単語で変わる
+        // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/29
+        "削除しようとするとエラーが発生する",
+        // 並立助詞
         "台に登ったり降りたりする",
+        "AとBとCを持ってきて",
         // fix regression - https://travis-ci.org/textlint-ja/textlint-rule-preset-ja-technical-writing/builds/207700760#L720
         "慣用的表現、熟語、概数、固有名詞、副詞など、漢数字を使用することが一般的な語句では漢数字を使います。",
         // 1個目の「と」は格助詞、2個めの「と」は接続助詞
@@ -27,19 +37,19 @@ tester.run("no-double-joshi", rule, {
         // "プロパティを削除しようとするとエラーが発生します。",
         {
             text: "太字も強調も同じように無視されます。",
-            options: { allow: ["も"] }
+            options: {allow: ["も"]}
         },
         // 区切り文字をカスタムする
         // ♪を区切り文字としたので、次の文は2つのセンテンスになる
         {
             text: "これはペンです♪これは鉛筆です♪",
-            options: { separatorCharacters: ["♪"] }
+            options: {separatorCharacters: ["♪"]}
         },
         // ,を読点とみなす
         {
             text: "これがiPhone,これがAndroidです。",
-            options: { commaCharacters: [","] }
-        }
+            options: {commaCharacters: [","]}
+        },
     ],
     invalid: [
         // エラー位置は最後の助詞の位置を表示する
@@ -61,6 +71,15 @@ tester.run("no-double-joshi", rule, {
                     message: `一文に二回以上利用されている助詞 "で" がみつかりました。`,
                     line: 1,
                     column: 10
+                }
+            ]
+        },
+        {
+            text: "クォートで囲むことで文字列を作成できる点は、他の文字列リテラルと同じです。",
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "で" がみつかりました。`,
+                    index: 9
                 }
             ]
         },
@@ -153,30 +172,6 @@ tester.run("no-double-joshi", rule, {
             ]
         },
         {
-            text: "これとあれとそれを持ってきて。",
-            errors: [
-                {
-                    message: `一文に二回以上利用されている助詞 "と" がみつかりました。`,
-                    line: 1,
-                    column: 6
-                }
-            ]
-        },
-        {
-            text: `この行にはtextlintによる警告は出ない。
-この行にはtextlintにより警告が発せられる。この行に何かしようとすると起きるという
-この行にはtextlintによる警告は出ない。
-`,
-            ext: ".txt",
-            errors: [
-                {
-                    message: `一文に二回以上利用されている助詞 "と" がみつかりました。`,
-                    line: 2,
-                    column: 38
-                }
-            ]
-        },
-        {
             // に + は と に + は
             // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
             text: "文字列にはそこには問題がある。",
@@ -207,7 +202,7 @@ tester.run("no-double-joshi", rule, {
         // 次のtextは1つのセンテンスとして認識されるので、"は"が重複する
         {
             text: "これはペンです．これは鉛筆です．",
-            options: { separatorCharacters: ["。"] },
+            options: {separatorCharacters: ["。"]},
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
@@ -218,7 +213,7 @@ tester.run("no-double-joshi", rule, {
         // 、を読点と認識させなくする
         {
             text: "これがiPhone、これがAndroidです。",
-            options: { commaCharacters: [] },
+            options: {commaCharacters: []},
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "が" がみつかりました。`,
