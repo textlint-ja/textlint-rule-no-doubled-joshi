@@ -8,7 +8,7 @@ import {
     create読点Matcher,
     concatJoishiTokens,
     createKeyFromKey,
-    restoreToSurfaceFromKey
+    restoreToSurfaceFromKey, is括弧Token
 } from "./token-utils";
 import { TxtNode } from "@textlint/ast-node-types";
 import { TextlintRuleModule } from "@textlint/types";
@@ -113,7 +113,7 @@ export interface Options {
 
  TODO: need abstraction
  */
-const report: TextlintRuleModule<Options> = function(context, options = {}) {
+const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const helper = new RuleHelper(context);
     // 最低間隔値
     const minInterval = options.min_interval !== undefined ? options.min_interval : defaultOptions.min_interval;
@@ -124,7 +124,7 @@ const report: TextlintRuleModule<Options> = function(context, options = {}) {
     const allow = options.allow || defaultOptions.allow;
     const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
     const commaCharacters = options.commaCharacters || defaultOptions.commaCharacters;
-    const { Syntax, report, RuleError } = context;
+    const {Syntax, report, RuleError} = context;
     const is読点Token = create読点Matcher(commaCharacters);
     return {
         [Syntax.Paragraph](node) {
@@ -154,10 +154,19 @@ const report: TextlintRuleModule<Options> = function(context, options = {}) {
                         if (isStrict) {
                             return is助詞Token(token);
                         }
-                        // デフォルトでは、"、"を間隔値の距離としてカウントする
+                        // "("や")"などもトークンとしてカウントする
+                        // xxxx（xxx) xxx でカッコの中と外に距離を一つ増やす目的
+                        // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/31
+                        if (is括弧Token(token)) {
+                            return true;
+                        }
                         // "、" があると助詞同士の距離が開くようにすることで、並列的な"、"の使い方を許容する目的
                         // https://github.com/azu/textlint-rule-no-doubled-joshi/issues/2
-                        return is助詞Token(token) || is読点Token(token);
+                        if (is読点Token(token)) {
+                            return true;
+                        }
+                        // デフォルトでは、"、"を間隔値の距離としてカウントする
+                        return is助詞Token(token);
                     });
                     const joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
                     /*

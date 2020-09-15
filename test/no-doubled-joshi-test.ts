@@ -31,6 +31,9 @@ tester.run("no-double-joshi", rule, {
         "AとBとCを持ってきて",
         // fix regression - https://travis-ci.org/textlint-ja/textlint-rule-preset-ja-technical-writing/builds/207700760#L720
         "慣用的表現、熟語、概数、固有名詞、副詞など、漢数字を使用することが一般的な語句では漢数字を使います。",
+        // カッコ内は別のセンテンスとしてみなす
+        // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/31
+        " 次の`escapeHTML`関数は**タグ関数**です（詳細は文字列の章を参照）。",
         // 1個目の「と」は格助詞、2個めの「と」は接続助詞
         "ターミナルで「test」**と**入力する**と**、画面に表示されます。",
         // 格助詞の種類が異なる
@@ -185,7 +188,7 @@ tester.run("no-double-joshi", rule, {
         },
         //
         {
-            text: `今まで「サイトはNetlify」「スライドはGitLab Pages」といった配信分けをしていたのですが、
+            text: `今まで、サイトはNetlifyスライドはGitLab Pagesといった配信分けをしていたのですが、
 「 \`/slides\` にビルドしたスライドを置きたい」という動機のものと、こんな構成を検討しています。
 
 * 最初にtextlintで文法チェック
@@ -194,7 +197,7 @@ tester.run("no-double-joshi", rule, {
             errors: [
                 {
                     message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
-                    index: 21
+                    index: 19
                 }
             ]
         },
