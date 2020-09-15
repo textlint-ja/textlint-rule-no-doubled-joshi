@@ -9,6 +9,10 @@ export const is助詞Token = (token: KuromojiToken) => {
     return token && /^助詞/.test(token.pos);
 };
 
+export const is括弧Token = (token: KuromojiToken) => {
+    return token && token.pos === "記号" && (token.pos_detail_1 === "括弧開" || token.pos_detail_1 === "括弧閉")
+}
+
 /**
  * 読点を判定する関数を返す
  * 注意: 名詞や記号ではないトークンは読点として扱えない
