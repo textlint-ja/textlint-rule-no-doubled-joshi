@@ -8,7 +8,8 @@ import {
     create読点Matcher,
     concatJoishiTokens,
     createKeyFromKey,
-    restoreToSurfaceFromKey, is括弧Token
+    restoreToSurfaceFromKey,
+    is括弧Token,
 } from "./token-utils";
 import { TxtNode } from "@textlint/ast-node-types";
 import { TextlintRuleModule } from "@textlint/types";
@@ -71,12 +72,12 @@ const defaultOptions = {
         "?", // question mark
         "!", //  exclamation mark
         "？", // (ja) zenkaku question mark
-        "！" // (ja) zenkaku exclamation mark
+        "！", // (ja) zenkaku exclamation mark
     ],
     commaCharacters: [
         "、",
-        "，" // 全角カンマ
-    ]
+        "，", // 全角カンマ
+    ],
 };
 
 export interface Options {
@@ -124,7 +125,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const allow = options.allow || defaultOptions.allow;
     const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
     const commaCharacters = options.commaCharacters || defaultOptions.commaCharacters;
-    const {Syntax, report, RuleError} = context;
+    const { Syntax, report, RuleError } = context;
     const is読点Token = create読点Matcher(commaCharacters);
     return {
         [Syntax.Paragraph](node) {
@@ -136,8 +137,8 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
             };
             const txtParentNode = splitSentences(node, {
                 SeparatorParser: {
-                    separatorCharacters
-                }
+                    separatorCharacters,
+                },
             });
             const sentences = txtParentNode.children.filter(isSentenceNode);
             return getTokenizer().then((tokenizer: any) => {
@@ -150,7 +151,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     // 連語(助詞)の対応
                     // http://www.weblio.jp/parts-of-speech/%E9%80%A3%E8%AA%9E(%E5%8A%A9%E8%A9%9E)_1
                     const concatTokens = concatJoishiTokens(tokens);
-                    const countableTokens = concatTokens.filter(token => {
+                    const countableTokens = concatTokens.filter((token) => {
                         if (isStrict) {
                             return is助詞Token(token);
                         }
@@ -178,7 +179,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                          "で:助詞.係助詞": [tokenB, tokenD, tokenF]
                      }
                      */
-                    Object.keys(joshiTokenSurfaceKeyMap).forEach(key => {
+                    Object.keys(joshiTokenSurfaceKeyMap).forEach((key) => {
                         const tokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
                         const joshiName = restoreToSurfaceFromKey(key);
                         // check allow
@@ -209,7 +210,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                                     new RuleError(
                                         `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`,
                                         {
-                                            index: originalIndex
+                                            index: originalIndex,
                                         }
                                     )
                                 );
@@ -218,9 +219,9 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                         });
                     });
                 };
-                sentences.forEach(node => checkSentence(node));
+                sentences.forEach((node) => checkSentence(node));
             });
-        }
+        },
     };
 };
 export default report;
