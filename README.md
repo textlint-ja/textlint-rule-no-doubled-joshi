@@ -1,4 +1,4 @@
-# textlint-rule-no-doubled-joshi [![Build Status](https://travis-ci.org/textlint-ja/textlint-rule-no-doubled-joshi.svg?branch=master)](https://travis-ci.org/textlint-ja/textlint-rule-no-doubled-joshi)
+# textlint-rule-no-doubled-joshi [![Actions Status: test](https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/workflows/test/badge.svg)](https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/actions?query=workflow%3A"test")
 
 1つの文中に同じ助詞が連続して出てくるのをチェックする[textlint](https://github.com/textlint/textlint)ルールです。
 
