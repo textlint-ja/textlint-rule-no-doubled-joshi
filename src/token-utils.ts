@@ -10,8 +10,8 @@ export const is助詞Token = (token: KuromojiToken) => {
 };
 
 export const is括弧Token = (token: KuromojiToken) => {
-    return token && token.pos === "記号" && (token.pos_detail_1 === "括弧開" || token.pos_detail_1 === "括弧閉")
-}
+    return token && token.pos === "記号" && (token.pos_detail_1 === "括弧開" || token.pos_detail_1 === "括弧閉");
+};
 
 /**
  * 読点を判定する関数を返す
@@ -48,7 +48,7 @@ const concatToken = (aToken: KuromojiToken, bToken: KuromojiToken) => {
  */
 export const concatJoishiTokens = (tokens: KuromojiToken[]) => {
     const newTokens: KuromojiToken[] = [];
-    tokens.forEach(token => {
+    tokens.forEach((token) => {
         const prevToken = newTokens[newTokens.length - 1];
         if (is助詞Token(token) && is助詞Token(prevToken)) {
             newTokens[newTokens.length - 1] = concatToken(prevToken, token);
