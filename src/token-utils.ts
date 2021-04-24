@@ -22,7 +22,7 @@ export const create読点Matcher = (commaCharacters: string[]) => {
     return function is読点Token(token: KuromojiToken) {
         return (
             commaCharacters.includes(token.surface_form) &&
-            // 、や, は名詞扱い
+            // 、や, は名詞扱いの場合がある(0.1.2で記号となる)
             (token.pos === "名詞" ||
                 // ，は記号 && 読点となる(surface_formを優先するために pos_detail_1/読点 のチェックを省く)
                 token.pos === "記号")
