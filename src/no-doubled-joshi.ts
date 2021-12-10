@@ -2,7 +2,7 @@
 "use strict";
 import { RuleHelper } from "textlint-rule-helper";
 import { splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode } from "sentence-splitter";
-import { getTokenizer, KuromojiToken } from "kuromojin";
+import { tokenize, KuromojiToken } from "kuromojin";
 import {
     is助詞Token,
     create読点Matcher,
@@ -141,11 +141,10 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                 },
             });
             const sentences = txtParentNode.children.filter(isSentenceNode);
-            return getTokenizer().then((tokenizer: any) => {
-                const checkSentence = (sentence: SentenceNode) => {
-                    const sentenceSource = new StringSource(sentence);
-                    const text = sentenceSource.toString();
-                    const tokens = tokenizer.tokenizeForSentence(text);
+            return sentences.forEach((sentence: SentenceNode) => {
+                const sentenceSource = new StringSource(sentence);
+                const text = sentenceSource.toString();
+                tokenize(text).then((tokens: KuromojiToken[]) => {
                     // 助詞 + 助詞は 一つの助詞として扱う
                     // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
                     // 連語(助詞)の対応
@@ -218,8 +217,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             return current;
                         });
                     });
-                };
-                sentences.forEach((node) => checkSentence(node));
+                });
             });
         },
     };
