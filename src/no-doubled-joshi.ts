@@ -141,84 +141,84 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                 },
             });
             const sentences = txtParentNode.children.filter(isSentenceNode);
-            return sentences.forEach((sentence: SentenceNode) => {
+            const checkSentence = async (sentence: SentenceNode) => {
                 const sentenceSource = new StringSource(sentence);
                 const text = sentenceSource.toString();
-                tokenize(text).then((tokens: KuromojiToken[]) => {
-                    // 助詞 + 助詞は 一つの助詞として扱う
-                    // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
-                    // 連語(助詞)の対応
-                    // http://www.weblio.jp/parts-of-speech/%E9%80%A3%E8%AA%9E(%E5%8A%A9%E8%A9%9E)_1
-                    const concatTokens = concatJoishiTokens(tokens);
-                    const countableTokens = concatTokens.filter((token) => {
-                        if (isStrict) {
-                            return is助詞Token(token);
-                        }
-                        // "("や")"などもトークンとしてカウントする
-                        // xxxx（xxx) xxx でカッコの中と外に距離を一つ増やす目的
-                        // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/31
-                        if (is括弧Token(token)) {
-                            return true;
-                        }
-                        // "、" があると助詞同士の距離が開くようにすることで、並列的な"、"の使い方を許容する目的
-                        // https://github.com/azu/textlint-rule-no-doubled-joshi/issues/2
-                        if (is読点Token(token)) {
-                            return true;
-                        }
-                        // デフォルトでは、"、"を間隔値の距離としてカウントする
+                const tokens = await tokenize(text);
+                // 助詞 + 助詞は 一つの助詞として扱う
+                // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
+                // 連語(助詞)の対応
+                // http://www.weblio.jp/parts-of-speech/%E9%80%A3%E8%AA%9E(%E5%8A%A9%E8%A9%9E)_1
+                const concatTokens = concatJoishiTokens(tokens);
+                const countableTokens = concatTokens.filter((token) => {
+                    if (isStrict) {
                         return is助詞Token(token);
-                    });
-                    const joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
-                    /*
-                     # Data Structure
+                    }
+                    // "("や")"などもトークンとしてカウントする
+                    // xxxx（xxx) xxx でカッコの中と外に距離を一つ増やす目的
+                    // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/31
+                    if (is括弧Token(token)) {
+                        return true;
+                    }
+                    // "、" があると助詞同士の距離が開くようにすることで、並列的な"、"の使い方を許容する目的
+                    // https://github.com/azu/textlint-rule-no-doubled-joshi/issues/2
+                    if (is読点Token(token)) {
+                        return true;
+                    }
+                    // デフォルトでは、"、"を間隔値の距離としてカウントする
+                    return is助詞Token(token);
+                });
+                const joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
+                /*
+                    # Data Structure
 
-                     joshiTokens = [tokenA, tokenB, tokenC, tokenD, tokenE, tokenF]
-                     joshiTokenSurfaceKeyMap = {
-                         "は:助詞.係助詞": [tokenA, tokenC, tokenE],
-                         "で:助詞.係助詞": [tokenB, tokenD, tokenF]
-                     }
-                     */
-                    Object.keys(joshiTokenSurfaceKeyMap).forEach((key) => {
-                        const tokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
-                        const joshiName = restoreToSurfaceFromKey(key);
-                        // check allow
-                        if (allow.indexOf(joshiName) >= 0) {
+                    joshiTokens = [tokenA, tokenB, tokenC, tokenD, tokenE, tokenF]
+                    joshiTokenSurfaceKeyMap = {
+                        "は:助詞.係助詞": [tokenA, tokenC, tokenE],
+                        "で:助詞.係助詞": [tokenB, tokenD, tokenF]
+                    }
+                    */
+                Object.keys(joshiTokenSurfaceKeyMap).forEach((key) => {
+                    const tokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
+                    const joshiName = restoreToSurfaceFromKey(key);
+                    // check allow
+                    if (allow.indexOf(joshiName) >= 0) {
+                        return;
+                    }
+                    // strict mode ではない時例外を除去する
+                    if (!isStrict) {
+                        if (matchExceptionRule(tokens)) {
                             return;
                         }
-                        // strict mode ではない時例外を除去する
-                        if (!isStrict) {
-                            if (matchExceptionRule(tokens)) {
-                                return;
-                            }
+                    }
+                    if (tokens.length <= 1) {
+                        return; // no duplicated token
+                    }
+                    // if found differenceIndex less than
+                    // tokes are sorted ascending order
+                    tokens.reduce((prev, current) => {
+                        const startPosition = countableTokens.indexOf(prev);
+                        const otherPosition = countableTokens.indexOf(current);
+                        // 助詞token同士の距離が設定値以下ならエラーを報告する
+                        const differenceIndex = otherPosition - startPosition;
+                        if (differenceIndex <= minInterval) {
+                            // padding positionを計算する
+                            const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
+                            report(
+                                sentence,
+                                new RuleError(
+                                    `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`,
+                                    {
+                                        index: originalIndex,
+                                    }
+                                )
+                            );
                         }
-                        if (tokens.length <= 1) {
-                            return; // no duplicated token
-                        }
-                        // if found differenceIndex less than
-                        // tokes are sorted ascending order
-                        tokens.reduce((prev, current) => {
-                            const startPosition = countableTokens.indexOf(prev);
-                            const otherPosition = countableTokens.indexOf(current);
-                            // 助詞token同士の距離が設定値以下ならエラーを報告する
-                            const differenceIndex = otherPosition - startPosition;
-                            if (differenceIndex <= minInterval) {
-                                // padding positionを計算する
-                                const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
-                                report(
-                                    sentence,
-                                    new RuleError(
-                                        `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`,
-                                        {
-                                            index: originalIndex,
-                                        }
-                                    )
-                                );
-                            }
-                            return current;
-                        });
+                        return current;
                     });
                 });
-            });
+            };
+            return Promise.all(sentences.map(checkSentence));
         },
     };
 };
