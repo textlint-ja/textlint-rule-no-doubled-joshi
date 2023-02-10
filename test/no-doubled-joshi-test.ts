@@ -79,6 +79,15 @@ tester.run("no-double-joshi", rule, {
             ],
         },
         {
+            text: "あなたは「私は彼は好きだ」と言った。",
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "は" がみつかりました。`,
+                    index: 8,
+                },
+            ],
+        },
+        {
             text: "材料不足で代替素材で製品を作った。",
             errors: [
                 {
