@@ -11,7 +11,7 @@ import {
     restoreToSurfaceFromKey,
     is括弧Token,
 } from "./token-utils";
-import { TxtNode } from "@textlint/ast-node-types";
+import { TxtNode, TxtParentNode } from "@textlint/ast-node-types";
 import { TextlintRuleModule } from "@textlint/types";
 import { StringSource } from "textlint-util-to-string";
 
@@ -84,6 +84,7 @@ export interface Options {
     /**
      * 助詞の最低間隔値
      * 指定した間隔値以下で同じ助詞が出現した場合エラーが出力されます
+     * デフォルトは1なので、同じ助詞が連続した場合にエラーとなります。
      */
     min_interval?: number;
     /**
@@ -106,13 +107,36 @@ export interface Options {
     commaCharacters?: string[];
 }
 
+/**
+ * `obj.method` のCode Nodeのように、区切り文字として意味をもつノードがある場合に、
+ * このルールでは単純に無視したいので、同じ文字数で意味のない文字列に置き換える
+ * @param sentenceNode
+ * @param maskedType
+ */
+const maskNode = (sentenceNode: TxtParentNode, maskedType: string[]): TxtParentNode => {
+    // recursive mask
+    return {
+        ...sentenceNode,
+        children: sentenceNode.children.map((node) => {
+            if (maskedType.includes(node.type)) {
+                return {
+                    ...node,
+                    type: node.type,
+                    value: "_".repeat(node.value.length),
+                };
+            }
+            if (node.children) {
+                return maskNode(node as TxtParentNode, maskedType);
+            }
+            return node;
+        })
+    }
+}
 /*
  1. Paragraph Node -> text
  2. text -> sentences
  3. tokenize sentence
  4. report error if found word that match the rule.
-
- TODO: need abstraction
  */
 const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const helper = new RuleHelper(context);
@@ -142,7 +166,9 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
             });
             const sentences = txtParentNode.children.filter(isSentenceNode);
             const checkSentence = async (sentence: SentenceNode) => {
-                const sentenceSource = new StringSource(sentence);
+                // コードの中身は無視するため、無意味な文字列に置き換える
+                const maskedSentence = maskNode(sentence, [Syntax.Code]);
+                const sentenceSource = new StringSource(maskedSentence);
                 const text = sentenceSource.toString();
                 const tokens = await tokenize(text);
                 // 助詞 + 助詞は 一つの助詞として扱う
@@ -154,10 +180,18 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     if (isStrict) {
                         return is助詞Token(token);
                     }
+                    // デフォルトでは、"、"などを間隔値の距離としてカウントする
                     // "("や")"などもトークンとしてカウントする
                     // xxxx（xxx) xxx でカッコの中と外に距離を一つ増やす目的
                     // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/31
                     if (is括弧Token(token)) {
+                        return true;
+                    }
+                    // sentence-splitterでセンテンスに区切った場合、 "Xは「カッコ書きの中の文」と言った。" というように、「」の中の文は区切られない
+                    // そのため、トークナイズしたトークンで区切り文字となる文字(。や.）があった場合には、カウントを増やす　
+                    // デフォルトではmin_interval:1 なので、「今日は早朝から出発したが、定刻には間に合わなかった。定刻には間に合わなかったが、無事会場に到着した」のようなものがエラーではなくなる
+                    // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/40
+                    if (separatorCharacters.includes(token.surface_form)) {
                         return true;
                     }
                     // "、" があると助詞同士の距離が開くようにすることで、並列的な"、"の使い方を許容する目的
@@ -165,7 +199,6 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     if (is読点Token(token)) {
                         return true;
                     }
-                    // デフォルトでは、"、"を間隔値の距離としてカウントする
                     return is助詞Token(token);
                 });
                 const joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
