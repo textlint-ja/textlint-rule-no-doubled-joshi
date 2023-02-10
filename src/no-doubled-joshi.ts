@@ -108,7 +108,7 @@ export interface Options {
 }
 
 /**
- * `obj.method` のように、区切り文字として意味をもつノードがある場合に、
+ * `obj.method` のCode Nodeのように、区切り文字として意味をもつノードがある場合に、
  * このルールでは単純に無視したいので、同じ文字数で意味のない文字列に置き換える
  * @param sentenceNode
  * @param maskedType
