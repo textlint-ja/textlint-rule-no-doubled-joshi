@@ -96,7 +96,7 @@ textlint --rule no-doubled-joshi README.md
 - `strict`: 厳しくチェックするかどうか
     - Default: `false`
     - 下記参照。例外としているものもエラーとするかどうか
-    - false-positiveが発生しやすくなります
+    - `true`にすると誤検知が発生しやすくなります
 - `allow`: 複数回の出現を許す助詞
     - Default: `[]`
     - 並立の助詞など、複数回出現しても無視する助詞を指定します
