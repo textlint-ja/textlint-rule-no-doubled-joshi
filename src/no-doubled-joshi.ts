@@ -11,8 +11,8 @@ import {
     restoreToSurfaceFromKey,
     is括弧Token,
 } from "./token-utils";
-import { TxtNode, TxtParentNode } from "@textlint/ast-node-types";
-import { TextlintRuleModule } from "@textlint/types";
+import type { TxtNode, TxtParentNode } from "@textlint/ast-node-types";
+import type { TextlintRuleModule } from "@textlint/types";
 import { StringSource } from "textlint-util-to-string";
 
 /**
@@ -107,31 +107,6 @@ export interface Options {
     commaCharacters?: string[];
 }
 
-/**
- * `obj.method` のCode Nodeのように、区切り文字として意味をもつノードがある場合に、
- * このルールでは単純に無視したいので、同じ文字数で意味のない文字列に置き換える
- * @param sentenceNode
- * @param maskedType
- */
-const maskNode = (sentenceNode: TxtParentNode, maskedType: string[]): TxtParentNode => {
-    // recursive mask
-    return {
-        ...sentenceNode,
-        children: sentenceNode.children.map((node) => {
-            if (maskedType.includes(node.type)) {
-                return {
-                    ...node,
-                    type: node.type,
-                    value: "_".repeat(node.value.length),
-                };
-            }
-            if (node.children) {
-                return maskNode(node as TxtParentNode, maskedType);
-            }
-            return node;
-        })
-    }
-}
 /*
  1. Paragraph Node -> text
  2. text -> sentences
@@ -159,7 +134,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
             const isSentenceNode = (node: TxtNode): node is SentenceNode => {
                 return node.type === SentenceSyntax.Sentence;
             };
-            const txtParentNode = splitSentences(node, {
+            const txtParentNode = splitSentences(node as TxtParentNode, {
                 SeparatorParser: {
                     separatorCharacters,
                 },
@@ -167,8 +142,19 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
             const sentences = txtParentNode.children.filter(isSentenceNode);
             const checkSentence = async (sentence: SentenceNode) => {
                 // コードの中身は無視するため、無意味な文字列に置き換える
-                const maskedSentence = maskNode(sentence, [Syntax.Code]);
-                const sentenceSource = new StringSource(maskedSentence);
+                // @ts-expect-error: sentence-splitterが古いので
+                const sentenceSource = new StringSource(sentence, {
+                    replacer({ node, maskValue }) {
+                        /*
+                         * `obj.method` のCode Nodeのように、区切り文字として意味をもつノードがある場合に、
+                         * このルールでは単純に無視したいので、同じ文字数で意味のない文字列に置き換える
+                         */
+                        if (node.type === Syntax.Code) {
+                            return maskValue("_");
+                        }
+                        return;
+                    }
+                });
                 const text = sentenceSource.toString();
                 const tokens = await tokenize(text);
                 // 助詞 + 助詞は 一つの助詞として扱う
@@ -238,6 +224,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             // padding positionを計算する
                             const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
                             report(
+                                // @ts-expect-error: SentenceNodeは独自であるため
                                 sentence,
                                 new RuleError(
                                     `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`,
