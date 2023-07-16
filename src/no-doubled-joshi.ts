@@ -150,7 +150,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                          * このルールでは単純に無視したいので、同じ文字数で意味のない文字列に置き換える
                          */
                         if (node.type === Syntax.Code) {
-                            return maskValue("_");
+                            return maskValue("ー");
                         }
                         return;
                     }
