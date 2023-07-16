@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues"
   },
-  "version": "4.0.4",
+  "version": "4.1.0",
   "description": "textlint rule check doubled joshi",
   "main": "lib/no-doubled-joshi.js",
   "files": [
