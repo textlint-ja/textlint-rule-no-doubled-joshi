@@ -107,6 +107,25 @@ export interface Options {
     commaCharacters?: string[];
 }
 
+interface ToTextWithPrevTokenParams {
+    tokens: KuromojiToken[];
+    source: StringSource;
+    sentence: SentenceNode;
+}
+
+const toTextWithPrevWord = (token: KuromojiToken, { tokens, source, sentence }: ToTextWithPrevTokenParams) => {
+    const index = tokens.indexOf(token);
+    const prevToken = tokens[index - 1];
+    if (prevToken) {
+        const originalIndex = source.originalIndexFromIndex(prevToken.word_position - 1);
+        if (originalIndex === undefined) {
+            return `"${token.surface_form}"`;
+        }
+        const sentenceText = sentence.raw.slice(originalIndex, prevToken.surface_form.length + originalIndex);
+        return `${sentenceText}"${token.surface_form}"`;
+    }
+    return `"${token.surface_form}"`;
+}
 /*
  1. Paragraph Node -> text
  2. text -> sentences
@@ -198,7 +217,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     }
                     */
                 Object.keys(joshiTokenSurfaceKeyMap).forEach((key) => {
-                    const tokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
+                    const joshiTokenSurfaceTokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
                     const joshiName = restoreToSurfaceFromKey(key);
                     // check allow
                     if (allow.indexOf(joshiName) >= 0) {
@@ -206,28 +225,47 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     }
                     // strict mode ではない時例外を除去する
                     if (!isStrict) {
-                        if (matchExceptionRule(tokens)) {
+                        if (matchExceptionRule(joshiTokenSurfaceTokens)) {
                             return;
                         }
                     }
-                    if (tokens.length <= 1) {
+                    if (joshiTokenSurfaceTokens.length <= 1) {
                         return; // no duplicated token
                     }
                     // if found differenceIndex less than
                     // tokes are sorted ascending order
-                    tokens.reduce((prev, current) => {
+                    joshiTokenSurfaceTokens.reduce((prev, current) => {
                         const startPosition = countableTokens.indexOf(prev);
                         const otherPosition = countableTokens.indexOf(current);
                         // 助詞token同士の距離が設定値以下ならエラーを報告する
                         const differenceIndex = otherPosition - startPosition;
                         if (differenceIndex <= minInterval) {
+                            // 連続する助詞を集める
+                            const startWord = toTextWithPrevWord(prev, {
+                                tokens: tokens,
+                                source: sentenceSource,
+                                sentence: sentence
+                            });
+                            const endWord = toTextWithPrevWord(current, {
+                                tokens: tokens,
+                                source: sentenceSource,
+                                sentence: sentence
+                            });
                             // padding positionを計算する
                             const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
                             report(
                                 // @ts-expect-error: SentenceNodeは独自であるため
                                 sentence,
                                 new RuleError(
-                                    `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`,
+                                    `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。
+
+次の助詞が連続しているため、文を読みにくくしています。
+
+- ${startWord}
+- ${endWord}
+
+異なる助詞を利用する、文を分割する、文の中で順番を入れ替えるなどを検討してください。
+`,
                                     {
                                         index: originalIndex,
                                     }
