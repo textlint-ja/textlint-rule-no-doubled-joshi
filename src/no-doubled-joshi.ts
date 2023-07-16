@@ -107,6 +107,50 @@ export interface Options {
     commaCharacters?: string[];
 }
 
+interface ToTextWithPrevTokenParams {
+    tokens: KuromojiToken[];
+    sentence: SentenceNode;
+}
+
+
+/**
+ * "~~~~~~{助詞}" から {Token}"{助詞}" という形になるように、前の単語を含めた助詞の文字列を取得する
+ *
+ * 前のNodeがStrの場合は、一つ前のTokenを取得する
+ * {Str}{助詞} -> {Token}"{助詞}"
+ *
+ * それ以外のNodeの場合は、そのNodeの文字列を取得する
+ * {Code}{助詞} -> {Code}"{助詞}"
+ * {Strong}{助詞} -> {Strong}"{助詞}"
+ *
+ * @param token
+ * @param tokens
+ * @param sentence
+ */
+const toTextWithPrevWord = (token: KuromojiToken, { tokens, sentence }: ToTextWithPrevTokenParams) => {
+    const index = tokens.indexOf(token);
+    const prevToken = tokens[index - 1];
+    // 前のTokenがない場合は、Tokenのsurface_formを返す
+    const DEFAULT_RESULT = `"${token.surface_form}"`;
+    if (!prevToken) {
+        return DEFAULT_RESULT;
+    }
+    const originalIndex = prevToken.word_position - 1;
+    if (originalIndex === undefined) {
+        return DEFAULT_RESULT;
+    }
+    // Tokenの位置に該当するNodeを取得する
+    const originalNode = sentence.children.find(node => {
+        return node.range[0] <= originalIndex && originalIndex < node.range[1];
+    });
+    if (originalNode === undefined) {
+        return DEFAULT_RESULT;
+    }
+    if (originalNode.type === "Str") {
+        return `${prevToken.surface_form}"${token.surface_form}"`
+    }
+    return `${originalNode.raw}"${token.surface_form}"`;
+}
 /*
  1. Paragraph Node -> text
  2. text -> sentences
@@ -198,36 +242,53 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     }
                     */
                 Object.keys(joshiTokenSurfaceKeyMap).forEach((key) => {
-                    const tokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
+                    const joshiTokenSurfaceTokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
                     const joshiName = restoreToSurfaceFromKey(key);
                     // check allow
-                    if (allow.indexOf(joshiName) >= 0) {
+                    if (allow.includes(joshiName)) {
                         return;
                     }
                     // strict mode ではない時例外を除去する
                     if (!isStrict) {
-                        if (matchExceptionRule(tokens)) {
+                        if (matchExceptionRule(joshiTokenSurfaceTokens)) {
                             return;
                         }
                     }
-                    if (tokens.length <= 1) {
+                    if (joshiTokenSurfaceTokens.length <= 1) {
                         return; // no duplicated token
                     }
                     // if found differenceIndex less than
                     // tokes are sorted ascending order
-                    tokens.reduce((prev, current) => {
+                    joshiTokenSurfaceTokens.reduce((prev, current) => {
                         const startPosition = countableTokens.indexOf(prev);
                         const otherPosition = countableTokens.indexOf(current);
                         // 助詞token同士の距離が設定値以下ならエラーを報告する
                         const differenceIndex = otherPosition - startPosition;
                         if (differenceIndex <= minInterval) {
+                            // 連続する助詞を集める
+                            const startWord = toTextWithPrevWord(prev, {
+                                tokens: tokens,
+                                sentence: sentence
+                            });
+                            const endWord = toTextWithPrevWord(current, {
+                                tokens: tokens,
+                                sentence: sentence
+                            });
                             // padding positionを計算する
                             const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
                             report(
                                 // @ts-expect-error: SentenceNodeは独自であるため
                                 sentence,
                                 new RuleError(
-                                    `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。`,
+                                    `一文に二回以上利用されている助詞 "${joshiName}" がみつかりました。
+
+次の助詞が連続しているため、文を読みにくくしています。
+
+- ${startWord}
+- ${endWord}
+
+同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
+`,
                                     {
                                         index: originalIndex,
                                     }
