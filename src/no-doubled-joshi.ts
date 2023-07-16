@@ -109,22 +109,47 @@ export interface Options {
 
 interface ToTextWithPrevTokenParams {
     tokens: KuromojiToken[];
-    source: StringSource;
     sentence: SentenceNode;
 }
 
-const toTextWithPrevWord = (token: KuromojiToken, { tokens, source, sentence }: ToTextWithPrevTokenParams) => {
+
+/**
+ * "~~~~~~{助詞}" から {Token}"{助詞}" という形になるように、前の単語を含めた助詞の文字列を取得する
+ *
+ * 前のNodeがStrの場合は、一つ前のTokenを取得する
+ * {Str}{助詞} -> {Token}"{助詞}"
+ *
+ * それ以外のNodeの場合は、そのNodeの文字列を取得する
+ * {Code}{助詞} -> {Code}"{助詞}"
+ * {Strong}{助詞} -> {Strong}"{助詞}"
+ *
+ * @param token
+ * @param tokens
+ * @param sentence
+ */
+const toTextWithPrevWord = (token: KuromojiToken, { tokens, sentence }: ToTextWithPrevTokenParams) => {
     const index = tokens.indexOf(token);
     const prevToken = tokens[index - 1];
-    if (prevToken) {
-        const originalIndex = source.originalIndexFromIndex(prevToken.word_position - 1);
-        if (originalIndex === undefined) {
-            return `"${token.surface_form}"`;
-        }
-        const sentenceText = sentence.raw.slice(originalIndex, prevToken.surface_form.length + originalIndex);
-        return `${sentenceText}"${token.surface_form}"`;
+    // 前のTokenがない場合は、Tokenのsurface_formを返す
+    const DEFAULT_RESULT = `"${token.surface_form}"`;
+    if (!prevToken) {
+        return DEFAULT_RESULT;
     }
-    return `"${token.surface_form}"`;
+    const originalIndex = prevToken.word_position - 1;
+    if (originalIndex === undefined) {
+        return DEFAULT_RESULT;
+    }
+    // Tokenの位置に該当するNodeを取得する
+    const originalNode = sentence.children.find(node => {
+        return node.range[0] <= originalIndex && originalIndex < node.range[1];
+    })
+    if (originalNode === undefined) {
+        return DEFAULT_RESULT;
+    }
+    if (originalNode.type === "Str") {
+        return `${prevToken.surface_form}"${token.surface_form}"`
+    }
+    return `${originalNode.raw}"${token.surface_form}"`;
 }
 /*
  1. Paragraph Node -> text
@@ -220,7 +245,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     const joshiTokenSurfaceTokens: KuromojiToken[] = joshiTokenSurfaceKeyMap[key];
                     const joshiName = restoreToSurfaceFromKey(key);
                     // check allow
-                    if (allow.indexOf(joshiName) >= 0) {
+                    if (allow.includes(joshiName)) {
                         return;
                     }
                     // strict mode ではない時例外を除去する
@@ -243,12 +268,10 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             // 連続する助詞を集める
                             const startWord = toTextWithPrevWord(prev, {
                                 tokens: tokens,
-                                source: sentenceSource,
                                 sentence: sentence
                             });
                             const endWord = toTextWithPrevWord(current, {
                                 tokens: tokens,
-                                source: sentenceSource,
                                 sentence: sentence
                             });
                             // padding positionを計算する
@@ -264,7 +287,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
 - ${startWord}
 - ${endWord}
 
-異なる助詞を利用する、文を分割する、文の中で順番を入れ替えるなどを検討してください。
+同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                                     {
                                         index: originalIndex,
