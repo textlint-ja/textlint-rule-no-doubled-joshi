@@ -142,7 +142,7 @@ const toTextWithPrevWord = (token: KuromojiToken, { tokens, sentence }: ToTextWi
     // Tokenの位置に該当するNodeを取得する
     const originalNode = sentence.children.find(node => {
         return node.range[0] <= originalIndex && originalIndex < node.range[1];
-    })
+    });
     if (originalNode === undefined) {
         return DEFAULT_RESULT;
     }
