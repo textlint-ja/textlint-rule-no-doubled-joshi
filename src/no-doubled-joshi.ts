@@ -1,19 +1,25 @@
 // LICENSE : MIT
 "use strict";
 import { RuleHelper } from "textlint-rule-helper";
-import { splitAST as splitSentences, Syntax as SentenceSyntax, SentenceNode } from "sentence-splitter";
-import { tokenize, KuromojiToken } from "kuromojin";
 import {
-    is助詞Token,
-    create読点Matcher,
+    SentenceSplitterSyntax,
+    SentenceSplitterTxtNode,
+    splitAST as splitSentences,
+    TxtSentenceNode
+} from "sentence-splitter";
+import { KuromojiToken, tokenize } from "kuromojin";
+import {
     concatJoishiTokens,
     createKeyFromKey,
-    restoreToSurfaceFromKey,
+    create読点Matcher,
+    is助詞Token,
     is括弧Token,
+    restoreToSurfaceFromKey
 } from "./token-utils";
-import type { TxtNode, TxtParentNode } from "@textlint/ast-node-types";
+import type { AnyTxtNode } from "@textlint/ast-node-types";
 import type { TextlintRuleModule } from "@textlint/types";
 import { StringSource } from "textlint-util-to-string";
+import type { StringSourceTxtParentNodeLikeNode } from "textlint-util-to-string/src/StringSource";
 
 /**
  * Create token map object
@@ -25,15 +31,18 @@ import { StringSource } from "textlint-util-to-string";
  */
 function createSurfaceKeyMap(tokens: KuromojiToken[]): { [index: string]: KuromojiToken[] } {
     // 助詞のみを対象とする
-    return tokens.filter(is助詞Token).reduce((keyMap, token) => {
-        // "は:助詞.係助詞" : [token]
-        const tokenKey = createKeyFromKey(token);
-        if (!keyMap[tokenKey]) {
-            keyMap[tokenKey] = [];
-        }
-        keyMap[tokenKey].push(token);
-        return keyMap;
-    }, {} as { [index: string]: KuromojiToken[] });
+    return tokens.filter(is助詞Token).reduce(
+        (keyMap, token) => {
+            // "は:助詞.係助詞" : [token]
+            const tokenKey = createKeyFromKey(token);
+            if (!keyMap[tokenKey]) {
+                keyMap[tokenKey] = [];
+            }
+            keyMap[tokenKey].push(token);
+            return keyMap;
+        },
+        {} as { [index: string]: KuromojiToken[] }
+    );
 }
 
 function matchExceptionRule(tokens: KuromojiToken[]) {
@@ -72,12 +81,12 @@ const defaultOptions = {
         "?", // question mark
         "!", //  exclamation mark
         "？", // (ja) zenkaku question mark
-        "！", // (ja) zenkaku exclamation mark
+        "！" // (ja) zenkaku exclamation mark
     ],
     commaCharacters: [
         "、",
-        "，", // 全角カンマ
-    ],
+        "，" // 全角カンマ
+    ]
 };
 
 export interface Options {
@@ -107,12 +116,6 @@ export interface Options {
     commaCharacters?: string[];
 }
 
-interface ToTextWithPrevTokenParams {
-    tokens: KuromojiToken[];
-    sentence: SentenceNode;
-}
-
-
 /**
  * "~~~~~~{助詞}" から {Token}"{助詞}" という形になるように、前の単語を含めた助詞の文字列を取得する
  *
@@ -127,7 +130,16 @@ interface ToTextWithPrevTokenParams {
  * @param tokens
  * @param sentence
  */
-const toTextWithPrevWord = (token: KuromojiToken, { tokens, sentence }: ToTextWithPrevTokenParams) => {
+const toTextWithPrevWord = (
+    token: KuromojiToken,
+    {
+        tokens,
+        sentence
+    }: {
+        tokens: KuromojiToken[];
+        sentence: TxtSentenceNode;
+    }
+) => {
     const index = tokens.indexOf(token);
     const prevToken = tokens[index - 1];
     // 前のTokenがない場合は、Tokenのsurface_formを返す
@@ -140,17 +152,17 @@ const toTextWithPrevWord = (token: KuromojiToken, { tokens, sentence }: ToTextWi
         return DEFAULT_RESULT;
     }
     // Tokenの位置に該当するNodeを取得する
-    const originalNode = sentence.children.find(node => {
+    const originalNode = sentence.children.find((node) => {
         return node.range[0] <= originalIndex && originalIndex < node.range[1];
     });
     if (originalNode === undefined) {
         return DEFAULT_RESULT;
     }
     if (originalNode.type === "Str") {
-        return `${prevToken.surface_form}"${token.surface_form}"`
+        return `${prevToken.surface_form}"${token.surface_form}"`;
     }
     return `${originalNode.raw}"${token.surface_form}"`;
-}
+};
 /*
  1. Paragraph Node -> text
  2. text -> sentences
@@ -175,19 +187,18 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
             if (helper.isChildNode(node, [Syntax.Link, Syntax.Image, Syntax.BlockQuote, Syntax.Emphasis])) {
                 return;
             }
-            const isSentenceNode = (node: TxtNode): node is SentenceNode => {
-                return node.type === SentenceSyntax.Sentence;
+            const isSentenceNode = (node: SentenceSplitterTxtNode | AnyTxtNode): node is TxtSentenceNode => {
+                return node.type === SentenceSplitterSyntax.Sentence;
             };
-            const txtParentNode = splitSentences(node as TxtParentNode, {
+            const txtParentNode = splitSentences(node, {
                 SeparatorParser: {
-                    separatorCharacters,
-                },
+                    separatorCharacters
+                }
             });
             const sentences = txtParentNode.children.filter(isSentenceNode);
-            const checkSentence = async (sentence: SentenceNode) => {
+            const checkSentence = async (sentence: TxtSentenceNode) => {
                 // コードの中身は無視するため、無意味な文字列に置き換える
-                // @ts-expect-error: sentence-splitterが古いので
-                const sentenceSource = new StringSource(sentence, {
+                const sentenceSource = new StringSource(sentence as StringSourceTxtParentNodeLikeNode, {
                     replacer({ node, maskValue }) {
                         /*
                          * `obj.method` のCode Nodeのように、区切り文字として意味をもつノードがある場合に、
@@ -218,7 +229,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                         return true;
                     }
                     // sentence-splitterでセンテンスに区切った場合、 "Xは「カッコ書きの中の文」と言った。" というように、「」の中の文は区切られない
-                    // そのため、トークナイズしたトークンで区切り文字となる文字(。や.）があった場合には、カウントを増やす　
+                    // そのため、トークナイズしたトークンで区切り文字となる文字(。や.）があった場合には、カウントを増やす
                     // デフォルトではmin_interval:1 なので、「今日は早朝から出発したが、定刻には間に合わなかった。定刻には間に合わなかったが、無事会場に到着した」のようなものがエラーではなくなる
                     // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/40
                     if (separatorCharacters.includes(token.surface_form)) {
@@ -290,7 +301,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                                     {
-                                        index: originalIndex,
+                                        index: originalIndex
                                     }
                                 )
                             );
@@ -300,7 +311,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                 });
             };
             return Promise.all(sentences.map(checkSentence));
-        },
+        }
     };
 };
 export default report;

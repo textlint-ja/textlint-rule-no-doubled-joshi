@@ -50,23 +50,23 @@ tester.run("no-double-joshi", rule, {
         // TODO: オプション化する
         {
             text: "短距離でも長距離でも早いです。",
-            options: { allow: ["でも"] },
+            options: { allow: ["でも"] }
         },
         {
             text: "太字も強調も同じように無視されます。",
-            options: { allow: ["も"] },
+            options: { allow: ["も"] }
         },
         // 区切り文字をカスタムする
         // ♪を区切り文字としたので、次の文は2つのセンテンスになる
         {
             text: "これはペンです♪これは鉛筆です♪",
-            options: { separatorCharacters: ["♪"] },
+            options: { separatorCharacters: ["♪"] }
         },
         // ,を読点とみなす
         {
             text: "これがiPhone,これがAndroidです。",
-            options: { commaCharacters: [","] },
-        },
+            options: { commaCharacters: [","] }
+        }
     ],
     invalid: [
         // エラー位置は最後の助詞の位置を表示する
@@ -85,9 +85,9 @@ tester.run("no-double-joshi", rule, {
 `,
                     // last match
                     line: 1,
-                    column: 4,
-                },
-            ],
+                    column: 4
+                }
+            ]
         },
         {
             text: "あなたは「私は彼は好きだ」と言った。",
@@ -102,9 +102,9 @@ tester.run("no-double-joshi", rule, {
 
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
-                    index: 8,
-                },
-            ],
+                    index: 8
+                }
+            ]
         },
         {
             text: "材料不足で代替素材で製品を作った。",
@@ -120,9 +120,9 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 10,
-                },
-            ],
+                    column: 10
+                }
+            ]
         },
         {
             text: "クォートで囲むことで文字列を作成できる点は、他の文字列リテラルと同じです。",
@@ -137,9 +137,9 @@ tester.run("no-double-joshi", rule, {
 
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
-                    index: 9,
-                },
-            ],
+                    index: 9
+                }
+            ]
         },
         {
             text: "列車事故でバスで振り替え輸送を行った。 ",
@@ -155,14 +155,14 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 8,
-                },
-            ],
+                    column: 8
+                }
+            ]
         },
         {
             text: "洋服をドラム式洗濯機でお湯と洗剤で洗い、乾燥機で素早く乾燥させる。",
             options: {
-                min_interval: 2,
+                min_interval: 2
             },
             errors: [
                 {
@@ -176,7 +176,7 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 17,
+                    column: 17
                 },
                 {
                     message: `一文に二回以上利用されている助詞 "で" がみつかりました。
@@ -189,9 +189,9 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 24,
-                },
-            ],
+                    column: 24
+                }
+            ]
         },
         {
             text: "法律案は十三日の衆議院本会議で賛成多数で可決され、参議院に送付されます",
@@ -207,15 +207,15 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 20,
-                },
-            ],
+                    column: 20
+                }
+            ]
         },
         {
             // 、 で間隔値が+1されるが、strictでは+されない
             text: "彼女は困り切った表情で、小声で尋ねた。",
             options: {
-                strict: true,
+                strict: true
             },
             errors: [
                 {
@@ -229,14 +229,14 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 15,
-                },
-            ],
+                    column: 15
+                }
+            ]
         },
         {
             text: "白装束で重力のない足どりでやってくる",
             options: {
-                min_interval: 2,
+                min_interval: 2
             },
             errors: [
                 {
@@ -250,14 +250,14 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 13,
-                },
-            ],
+                    column: 13
+                }
+            ]
         },
         {
             text: "既存のコードの利用",
             options: {
-                strict: true,
+                strict: true
             },
             errors: [
                 {
@@ -271,9 +271,9 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 7,
-                },
-            ],
+                    column: 7
+                }
+            ]
         },
         {
             text: "これは`obj.method`は何をしているかを示します。",
@@ -289,9 +289,9 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 16,
-                },
-            ],
+                    column: 16
+                }
+            ]
         },
         {
             // に + は と に + は
@@ -309,9 +309,9 @@ tester.run("no-double-joshi", rule, {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                     line: 1,
-                    column: 8,
-                },
-            ],
+                    column: 8
+                }
+            ]
         },
         //
         {
@@ -332,9 +332,9 @@ tester.run("no-double-joshi", rule, {
 
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
-                    index: 19,
-                },
-            ],
+                    index: 19
+                }
+            ]
         },
         // オプションで、全角ピリオドを読点として認識させなくする
         // 次のtextは1つのセンテンスとして認識されるので、"は"が重複する
@@ -352,9 +352,9 @@ tester.run("no-double-joshi", rule, {
 
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
-                    index: 10,
-                },
-            ],
+                    index: 10
+                }
+            ]
         },
         // 、を読点と認識させなくする
         {
@@ -371,9 +371,9 @@ tester.run("no-double-joshi", rule, {
 
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
-                    index: 12,
-                },
-            ],
-        },
-    ],
+                    index: 12
+                }
+            ]
+        }
+    ]
 });
