@@ -194,7 +194,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
     const allow = options.allow || defaultOptions.allow;
     const separatorCharacters = options.separatorCharacters || defaultOptions.separatorCharacters;
     const commaCharacters = options.commaCharacters || defaultOptions.commaCharacters;
-    const { Syntax, report, RuleError } = context;
+    const { Syntax, report, RuleError, locator } = context;
     const is読点Token = create読点Matcher(commaCharacters);
     return {
         [Syntax.Paragraph](node) {
@@ -301,6 +301,10 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             });
                             // padding positionを計算する
                             const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
+                            // originalIndexがない場合は基本的にはないが、ない場合は無視する
+                            if (originalIndex === undefined) {
+                                return current;
+                            }
                             report(
                                 // @ts-expect-error: SentenceNodeは独自であるため
                                 sentence,
@@ -315,7 +319,10 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
 同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
 `,
                                     {
-                                        index: originalIndex
+                                        padding: locator.range([
+                                            originalIndex,
+                                            originalIndex + current.surface_form.length
+                                        ])
                                     }
                                 )
                             );
