@@ -29,6 +29,12 @@ tester.run("no-double-joshi", rule, {
         // 並立助詞
         "台に登ったり降りたりする",
         "AとBとCを持ってきて",
+        // "〜か〜か" のパターン
+        // "〜かどうか" は例外として許容する(誤検知が起きにくいため)
+        // https://jumonji-u.repo.nii.ac.jp/record/700/files/22-1.pdf
+        // Issue: https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/62
+        // https://www.jpf.go.jp/j/urawa/j_rsorcs/textbook/setsumei_pdf/setsumei16_2.pdf
+        "これにするかどうか検討する",
         // fix regression - https://travis-ci.org/textlint-ja/textlint-rule-preset-ja-technical-writing/builds/207700760#L720
         "慣用的表現、熟語、概数、固有名詞、副詞など、漢数字を使用することが一般的な語句では漢数字を使います。",
         // カッコ内は別のセンテンスとしてみなす

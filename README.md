@@ -204,6 +204,16 @@ textlint --rule no-doubled-joshi README.md
 
 並立助詞(`たり`)は連続するのが意図した助詞であるため許可します。
 
+### 〜かどうか
+
+> これにする**かどう**か**検討する
+
+このような場合、助詞(**か**)が連続していますが、"〜かどうか"表現は一般的であるため許可します。
+
+- Issue: [質問： ～かどうか、について · Issue #62 · textlint-ja/textlint-rule-no-doubled-joshi](https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/62)
+- [文節中の「か」の用法](https://jumonji-u.repo.nii.ac.jp/record/700/files/22-1.pdf)
+- [かどうか／疑問詞･･･か](https://www.jpf.go.jp/j/urawa/j_rsorcs/textbook/setsumei_pdf/setsumei16_2.pdf>)
+
 ### 連語(助詞)
 
 - [連語（助詞） - 修飾語 - 品詞の分類 - Weblio 辞書](http://www.weblio.jp/parts-of-speech/%E9%80%A3%E8%AA%9E(%E5%8A%A9%E8%A9%9E)_1 "連語（助詞） - 修飾語 - 品詞の分類 - Weblio 辞書")
