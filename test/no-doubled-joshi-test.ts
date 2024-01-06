@@ -301,6 +301,7 @@ tester.run("no-double-joshi", rule, {
                 }
             ]
         },
+        // 連語（助詞）
         {
             // に + は と に + は
             // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
@@ -318,6 +319,26 @@ tester.run("no-double-joshi", rule, {
 `,
                     line: 1,
                     column: 8
+                }
+            ]
+        },
+        // 連語（助詞）
+        {
+            // かも + しれない と かも + しれない
+            // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
+            text: "そこには問題があるかもしれないかもしれない。",
+            errors: [
+                {
+                    message: `一文に二回以上利用されている助詞 "かも" がみつかりました。
+
+次の助詞が連続しているため、文を読みにくくしています。
+
+- ある"かも"
+- ない"かも"
+
+同じ助詞を連続して利用しない、文の中で順番を入れ替える、文を分割するなどを検討してください。
+`,
+                    range: [15, 16]
                 }
             ]
         },
