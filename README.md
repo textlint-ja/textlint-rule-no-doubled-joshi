@@ -230,7 +230,7 @@ textlint --rule no-doubled-joshi README.md
 
 - Issue: [質問： ～かどうか、について · Issue #62 · textlint-ja/textlint-rule-no-doubled-joshi](https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/62)
 - [文節中の「か」の用法](https://jumonji-u.repo.nii.ac.jp/record/700/files/22-1.pdf)
-- [かどうか／疑問詞･･･か](https://www.jpf.go.jp/j/urawa/j_rsorcs/textbook/setsumei_pdf/setsumei16_2.pdf>)
+- [かどうか／疑問詞･･･か](https://www.jpf.go.jp/j/urawa/j_rsorcs/textbook/setsumei_pdf/setsumei16_2.pdf)
 
 ### 連語(助詞)
 
