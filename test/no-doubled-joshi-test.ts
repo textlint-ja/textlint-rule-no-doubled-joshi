@@ -35,6 +35,8 @@ tester.run("no-double-joshi", rule, {
         // Issue: https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/62
         // https://www.jpf.go.jp/j/urawa/j_rsorcs/textbook/setsumei_pdf/setsumei16_2.pdf
         "これにするかどうか検討する",
+        "ここがわたしたちの席かどうか確かめましょう。",
+        "日本料理が好きかどうか聞いてください",
         // fix regression - https://travis-ci.org/textlint-ja/textlint-rule-preset-ja-technical-writing/builds/207700760#L720
         "慣用的表現、熟語、概数、固有名詞、副詞など、漢数字を使用することが一般的な語句では漢数字を使います。",
         // カッコ内は別のセンテンスとしてみなす
