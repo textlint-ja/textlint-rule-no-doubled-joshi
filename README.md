@@ -179,7 +179,7 @@ textlint --rule no-doubled-joshi README.md
 
 ### カッコでの区切り
 
-``
+```
 次の`escapeHTML`関数は**タグ関数**です（詳細は文字列の章を参照）
 ```
 
