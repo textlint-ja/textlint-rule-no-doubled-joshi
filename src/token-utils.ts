@@ -1,7 +1,7 @@
 // LICENSE : MIT
 "use strict";
 
-import { KuromojiToken } from "kuromojin";
+import type { KuromojiToken } from "kuromojin";
 
 // 助詞どうか
 export const is助詞Token = (token: KuromojiToken) => {
