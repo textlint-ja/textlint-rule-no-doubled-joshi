@@ -45,8 +45,8 @@ function createSurfaceKeyMap(tokens: KuromojiToken[]): { [index: string]: Kuromo
     );
 }
 
-function matchExceptionRule(tokens: KuromojiToken[]) {
-    const token = tokens[0];
+function matchExceptionRule(joshiTokens: KuromojiToken[], allTokens: KuromojiToken[]) {
+    const token = joshiTokens[0];
     // "の" の重なりは例外
     if (token.pos_detail_1 === "連体化") {
         return true;
@@ -61,8 +61,22 @@ function matchExceptionRule(tokens: KuromojiToken[]) {
     }
     // 並立助詞は例外
     // 登ったり降りたり
-    if (tokens.length === 2 && tokens[0].pos_detail_1 === "並立助詞" && tokens[1].pos_detail_1 === "並立助詞") {
+    if (
+        joshiTokens.length === 2 &&
+        joshiTokens[0].pos_detail_1 === "並立助詞" &&
+        joshiTokens[1].pos_detail_1 === "並立助詞"
+    ) {
         return true;
+    }
+    // 〜か〜か のパターン
+    // 〜かどうか は例外 として許容する
+    if (joshiTokens.length === 2 && joshiTokens[0].surface_form === "か" && joshiTokens[1].surface_form === "か") {
+        // 〜|か|どう|か|
+        const lastかIndex = allTokens.indexOf(joshiTokens[1]);
+        const douToken = allTokens[lastかIndex - 1];
+        if (douToken && douToken.surface_form === "どう") {
+            return true;
+        }
     }
     return false;
 }
@@ -216,8 +230,8 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                 // https://github.com/textlint-ja/textlint-rule-no-doubled-joshi/issues/15
                 // 連語(助詞)の対応
                 // http://www.weblio.jp/parts-of-speech/%E9%80%A3%E8%AA%9E(%E5%8A%A9%E8%A9%9E)_1
-                const concatTokens = concatJoishiTokens(tokens);
-                const countableTokens = concatTokens.filter((token) => {
+                const concatedJoshiTokens = concatJoishiTokens(tokens);
+                const countableJoshiTokens = concatedJoshiTokens.filter((token) => {
                     if (isStrict) {
                         return is助詞Token(token);
                     }
@@ -242,7 +256,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     }
                     return is助詞Token(token);
                 });
-                const joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableTokens);
+                const joshiTokenSurfaceKeyMap = createSurfaceKeyMap(countableJoshiTokens);
                 /*
                     # Data Structure
 
@@ -261,7 +275,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     }
                     // strict mode ではない時例外を除去する
                     if (!isStrict) {
-                        if (matchExceptionRule(joshiTokenSurfaceTokens)) {
+                        if (matchExceptionRule(joshiTokenSurfaceTokens, tokens)) {
                             return;
                         }
                     }
@@ -271,8 +285,8 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     // if found differenceIndex less than
                     // tokes are sorted ascending order
                     joshiTokenSurfaceTokens.reduce((prev, current) => {
-                        const startPosition = countableTokens.indexOf(prev);
-                        const otherPosition = countableTokens.indexOf(current);
+                        const startPosition = countableJoshiTokens.indexOf(prev);
+                        const otherPosition = countableJoshiTokens.indexOf(current);
                         // 助詞token同士の距離が設定値以下ならエラーを報告する
                         const differenceIndex = otherPosition - startPosition;
                         if (differenceIndex <= minInterval) {
