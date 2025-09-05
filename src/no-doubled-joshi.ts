@@ -275,7 +275,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     }
                     // strict mode ではない時例外を除去する
                     if (!isStrict) {
-                        if (matchExceptionRule(joshiTokenSurfaceTokens, tokens)) {
+                        if (matchExceptionRule(joshiTokenSurfaceTokens, concatedJoshiTokens)) {
                             return;
                         }
                     }
@@ -292,11 +292,11 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                         if (differenceIndex <= minInterval) {
                             // 連続する助詞を集める
                             const startWord = toTextWithPrevWord(prev, {
-                                tokens: tokens,
+                                tokens: concatedJoshiTokens,
                                 sentence: sentence
                             });
                             const endWord = toTextWithPrevWord(current, {
-                                tokens: tokens,
+                                tokens: concatedJoshiTokens,
                                 sentence: sentence
                             });
                             // padding positionを計算する

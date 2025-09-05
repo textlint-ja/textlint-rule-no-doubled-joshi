@@ -36,17 +36,19 @@ export const create読点Matcher = (commaCharacters: string[]) => {
  * @returns {Object}
  */
 const concatToken = (aToken: KuromojiToken, bToken: KuromojiToken) => {
-    aToken.surface_form += bToken.surface_form;
-    aToken.pos += bToken.pos;
-    aToken.pos_detail_1 += bToken.surface_form;
-    return aToken;
+    return {
+        ...aToken,
+        surface_form: aToken.surface_form + bToken.surface_form,
+        pos: aToken.pos + bToken.pos,
+        pos_detail_1: aToken.pos_detail_1 + bToken.surface_form
+    };
 };
 /**
  * 助詞+助詞 というように連続しているtokenを結合し直したtokenの配列を返す
  * @param {Array} tokens
  * @returns {Array}
  */
-export const concatJoishiTokens = (tokens: KuromojiToken[]) => {
+export const concatJoishiTokens = (tokens: readonly KuromojiToken[]) => {
     const newTokens: KuromojiToken[] = [];
     tokens.forEach((token) => {
         const prevToken = newTokens[newTokens.length - 1];
