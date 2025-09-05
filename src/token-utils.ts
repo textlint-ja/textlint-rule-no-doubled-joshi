@@ -48,7 +48,7 @@ const concatToken = (aToken: KuromojiToken, bToken: KuromojiToken) => {
  * @param {Array} tokens
  * @returns {Array}
  */
-export const concatJoishiTokens = (tokens: KuromojiToken[]) => {
+export const concatJoishiTokens = (tokens: readonly KuromojiToken[]) => {
     const newTokens: KuromojiToken[] = [];
     tokens.forEach((token) => {
         const prevToken = newTokens[newTokens.length - 1];
