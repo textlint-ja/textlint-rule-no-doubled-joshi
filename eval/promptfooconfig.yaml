@@ -1,0 +1,105 @@
+description: 'textlint-rule-no-doubled-joshi エラーメッセージ品質評価（小規模テスト）'
+
+prompts:
+  - '{{text}}'
+
+providers:
+  - id: file://./providers/textlintProvider.mjs
+    label: 'textlint-no-doubled-joshi'
+
+# Rate limit対策
+commandLineOptions:
+  maxConcurrency: 1
+  delay: 5000
+
+# デフォルトの評価設定
+defaultTest:
+  assert:
+    - type: llm-rubric
+      value: |
+        エラーメッセージの明確性を0.0-1.0で評価してください。
+
+        評価基準：
+        - 1.0: 非常に明確で分かりやすい
+        - 0.7-0.9: 明確だが改善の余地がある
+        - 0.4-0.6: やや分かりにくい
+        - 0.0-0.3: 非常に分かりにくい
+
+        ユーザーが何が問題なのかを理解できるか、専門用語が適切に説明されているか、メッセージの構造が分かりやすいかを評価してください。
+      metric: clarity
+      threshold: 0.6
+      provider: ollama:completion:qwen2.5
+
+    - type: llm-rubric
+      value: |
+        エラーメッセージの正確性を0.0-1.0で評価してください。
+
+        評価基準：
+        - 1.0: 技術的に完全に正確
+        - 0.7-0.9: ほぼ正確だが細かい問題がある
+        - 0.4-0.6: やや不正確
+        - 0.0-0.3: 明らかに不正確
+
+        技術的に正しい指摘か、指摘された問題が実際に存在するか、誤検知ではないかを評価してください。
+      metric: accuracy
+      threshold: 0.7
+      provider: ollama:completion:qwen2.5
+
+    - type: llm-rubric
+      value: |
+        エラーメッセージの修正可能性を0.0-1.0で評価してください。
+
+        評価基準：
+        - 1.0: 具体的な修正方法が明示されている
+        - 0.7-0.9: 修正の方向性は示されている
+        - 0.4-0.6: やや抽象的
+        - 0.0-0.3: 修正方法が不明
+
+        具体的な修正方法が示されているか、ユーザーが次のアクションを取れるか、修正例や代替案が提供されているかを評価してください。
+      metric: fixability
+      threshold: 0.6
+      provider: ollama:completion:qwen2.5
+
+    - type: llm-rubric
+      value: |
+        エラーメッセージの文脈適合性を0.0-1.0で評価してください。
+
+        評価基準：
+        - 1.0: 文脈に完全に適合している
+        - 0.7-0.9: 概ね適切
+        - 0.4-0.6: やや不適切
+        - 0.0-0.3: 文脈を無視している
+
+        テキストの文脈を考慮した適切な指摘か、日本語の自然な表現を考慮しているか、過度に厳格すぎないかを評価してください。
+      metric: contextual_fit
+      threshold: 0.6
+      provider: ollama:completion:qwen2.5
+
+    - type: llm-rubric
+      value: |
+        元のテキストとLLMが修正したテキストを比較して、修正の品質を0.0-1.0で評価してください。
+
+        元のテキスト：{{context.originalText}}
+        修正後のテキスト：{{context.fixedText}}
+
+        評価基準：
+        - 1.0: 指摘された問題が完全に解消され、自然で読みやすい日本語になっている
+        - 0.7-0.9: 問題は解消されたが、やや不自然な表現が残っている
+        - 0.4-0.6: 修正が不十分、または元の意味が変わってしまっている
+        - 0.0-0.3: 修正できていない、または文章が破綻している
+
+        指摘された問題が解消されているか、元の意味が保たれているか、自然で読みやすい日本語になっているかを総合的に評価してください。
+      metric: fix_quality
+      threshold: 0.7
+      provider: ollama:completion:qwen2.5
+
+# テストケース
+tests: tests/doubled_joshi_cases_small.json
+
+# 派生メトリクス
+derivedMetrics:
+  - name: 'overall_quality'
+    value: 'clarity * 0.2 + accuracy * 0.3 + fixability * 0.2 + contextual_fit * 0.1 + fix_quality * 0.2'
+
+# 出力設定
+outputPath: './results/evaluation-results.json'

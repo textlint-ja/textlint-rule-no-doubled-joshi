@@ -27,7 +27,9 @@
     "prepublish": "npm run --if-present build",
     "test": "textlint-scripts test",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css}\"",
-    "prepare": "git config --local core.hooksPath .githooks"
+    "prepare": "git config --local core.hooksPath .githooks",
+    "eval": "promptfoo eval -c eval/promptfooconfig.yaml",
+    "eval:generate": "node --experimental-strip-types eval/scripts/generate-dataset.mjs"
   },
   "keywords": [
     "rule",
@@ -35,13 +37,18 @@
     "textlintrule"
   ],
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.65.0",
+    "@azure-rest/ai-inference": "^1.0.0-beta.6",
     "@textlint/types": "^13.4.1",
     "@types/node": "^20.10.0",
     "lint-staged": "^15.1.0",
     "prettier": "^3.1.0",
+    "promptfoo": "^0.118.14",
+    "textlint": "^15.2.3",
     "textlint-scripts": "^13.4.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "create-textlint-rule-example": "^3.0.1"
   },
   "dependencies": {
     "kuromojin": "^3.0.0",
