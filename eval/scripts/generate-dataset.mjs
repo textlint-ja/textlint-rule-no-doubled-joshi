@@ -1,7 +1,7 @@
 import { getRuleTest } from "create-textlint-rule-example";
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +24,7 @@ console.log(`抽出されたテストケース: valid=${results.valid.length}, i
 const dataset = results.invalid.map((testCase, index) => {
     // エラーメッセージを取得
     const errorMessage = testCase.errors[0]?.message || "";
-
+    
     return {
         text: testCase.text,
         errorMessage: errorMessage,
