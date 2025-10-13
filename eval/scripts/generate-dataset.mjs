@@ -25,13 +25,8 @@ const dataset = results.invalid.map((testCase, index) => {
     // エラーメッセージを取得
     const errorMessage = testCase.errors[0]?.message || "";
 
-    // 重複している助詞を抽出（メッセージから）
-    const particleMatch = errorMessage.match(/助詞 "([^"]+)" が/);
-    const particle = particleMatch ? particleMatch[1] : "";
-
     return {
         text: testCase.text,
-        particle: particle,
         errorMessage: errorMessage,
         options: testCase.options || {},
         caseId: `invalid-${index + 1}`

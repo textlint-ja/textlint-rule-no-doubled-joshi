@@ -44,6 +44,6 @@
   "accuracy": 0.9,
   "fixability": 0.7,
   "contextual_fit": 0.8,
-  "reasoning": "評価の理由を簡潔に説明"
+  "reasoning": "評価の理由を日本語で簡潔に説明"
 }
 ```
