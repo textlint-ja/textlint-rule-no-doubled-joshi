@@ -37,8 +37,6 @@
     "textlintrule"
   ],
   "devDependencies": {
-    "@anthropic-ai/sdk": "^0.65.0",
-    "@azure-rest/ai-inference": "^1.0.0-beta.6",
     "@textlint/types": "^13.4.1",
     "@types/node": "^20.10.0",
     "lint-staged": "^15.1.0",
