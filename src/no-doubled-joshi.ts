@@ -121,6 +121,11 @@ export interface Options {
      */
     allow?: string[];
     /**
+     * 助詞に対してどの回数まで出現を許すか
+     * 例): 3 または { "が": 2, "も": 3 }
+     */
+    allowCount?: number | { [index: string]: number };
+    /**
      * 文の区切りとなる文字(句点)の配列
      */
     separatorCharacters?: string[];
@@ -129,6 +134,22 @@ export interface Options {
      */
     commaCharacters?: string[];
 }
+
+const getAllowCount = (joshiName: string, allowCountOption?: number | { [index: string]: number }): number => {
+    if (allowCountOption === undefined) {
+        return 1;
+    }
+    if (typeof allowCountOption === "number") {
+        return Math.max(1, allowCountOption);
+    }
+    if (typeof allowCountOption === "object" && allowCountOption !== null) {
+        const count = allowCountOption[joshiName];
+        if (count !== undefined) {
+            return Math.max(1, count);
+        }
+    }
+    return 1;
+};
 
 /**
  * "~~~~~~{助詞}" から {Token}"{助詞}" という形になるように、前の単語を含めた助詞の文字列を取得する
@@ -279,12 +300,13 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             return;
                         }
                     }
-                    if (joshiTokenSurfaceTokens.length <= 1) {
-                        return; // no duplicated token
+                    const allowCount = getAllowCount(joshiName, options.allowCount);
+                    if (joshiTokenSurfaceTokens.length <= allowCount) {
+                        return; // no duplicated token exceeding allowCount
                     }
-                    // if found differenceIndex less than
-                    // tokes are sorted ascending order
-                    joshiTokenSurfaceTokens.reduce((prev, current) => {
+                    for (let i = allowCount; i < joshiTokenSurfaceTokens.length; i++) {
+                        const prev = joshiTokenSurfaceTokens[i - 1];
+                        const current = joshiTokenSurfaceTokens[i];
                         const startPosition = countableJoshiTokens.indexOf(prev);
                         const otherPosition = countableJoshiTokens.indexOf(current);
                         // 助詞token同士の距離が設定値以下ならエラーを報告する
@@ -303,7 +325,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                             const originalIndex = sentenceSource.originalIndexFromIndex(current.word_position - 1);
                             // originalIndexがない場合は基本的にはないが、ない場合は無視する
                             if (originalIndex === undefined) {
-                                return current;
+                                continue;
                             }
                             report(
                                 // @ts-expect-error: SentenceNodeは独自であるため
@@ -327,8 +349,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                                 )
                             );
                         }
-                        return current;
-                    });
+                    }
                 });
             };
             return Promise.all(sentences.map(checkSentence));
