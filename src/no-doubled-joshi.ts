@@ -331,7 +331,7 @@ const report: TextlintRuleModule<Options> = function (context, options = {}) {
                     });
                 });
             };
-            return Promise.all(sentences.map(checkSentence));
+            return Promise.all(sentences.map(checkSentence)).then(() => undefined);
         }
     };
 };
