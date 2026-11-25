@@ -80,6 +80,13 @@ textlint --rule no-doubled-joshi README.md
             "strict": false,
             // 助詞のうち「も」「や」は複数回の出現を許す
             "allow": ["も","や"],
+            // 助詞に対してどの回数まで出現を許すか
+            "allowCount": {
+              "が": 2,
+              "も": 3
+            },
+            // 直接数字を指定すれば全ての助詞に対してその数だけ出現を許す
+            // "allowCount": 3,
             // 文の区切り文字となる配列
             "separatorCharacters": [
                 ".", // period
@@ -112,6 +119,10 @@ textlint --rule no-doubled-joshi README.md
     - Default: `[]`
     - 並立の助詞など、複数回出現しても無視する助詞を指定します
     - 例) `"も"`を許可したい場合は `{ "allow": ["も"] }`
+- `allowCount`: 助詞の出現上限値
+    - Default: `1`
+    - 助詞ごとに一文の中で出現を許す最大回数を指定します。数値（すべての助詞に適用）またはオブジェクト（助詞ごとの上限）で指定できます。
+      - 例) `"allowCount": 3` または `"allowCount": { "が": 2, "も": 3 }`
 - `separatorCharacters`: 文の区切り文字の配列
     - Default: `[".", "．", "。", "?", "!", "？", "！"]`
     - `separatorCharacters`を設定するとデフォルト値は上書きされます
